@@ -1,3 +1,16 @@
+"""
+PyPass3
+
+Dice Roll Optional, Mostly-Random Word, Number, and Mixed Character 
+Password Generator
+
+Mozilla Public License Version 2
+https://www.mozilla.org/en-US/MPL/2.0/
+
+Copyright (c) 2017 Nick Vincent-Maloney <nicorellius@gmail.com>
+
+"""
+
 import sqlite3
 
 from flask import (Flask, request, session, g, redirect,
