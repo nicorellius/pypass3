@@ -1,0 +1,32 @@
+<!doctype html>
+
+<title>PyPass3 - Password Generator</title>
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+<link href="https://fonts.googleapis.com/css?family=Amiri|BioRhyme|Crimson+Text|Domine|Droid+Serif|Open+Sans+Condensed:300|Roboto|Sanchez|Tinos|Volkhov" rel="stylesheet">
+
+<div class="page">
+
+    <h1>Password Generator</h1>
+
+    <div class="metanav">
+    {% if not session.logged_in %}
+        <a href="{{ url_for('login') }}">log in</a>
+    {% else %}
+        <a href="{{ url_for('logout') }}">log out</a>
+    {% endif %}
+    </div>
+    {% for message in get_flashed_messages() %}
+        <div class="flash">
+            <pre id="p1">{{ message }}</pre>
+            <button id="p2" class="btn btn-sm btn-success">Copy</button>
+        </div>
+    {% endfor %}
+    {% block body %}{% endblock %}
+
+</div>
+
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>

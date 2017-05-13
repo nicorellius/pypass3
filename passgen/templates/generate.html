@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+{% block body %}
+    {% if session.logged_in %}
+
+    <section class="instructions top-mar-1em">
+        <p>
+            Make robust secrets with random characters, words, or numbers, using
+            <a href="https://www.random.org" target="_blank">RANDOM.ORG</a>
+            mostly random strings and numbers. Choose number of dice and how
+            many times to roll to create passphrases of common words.
+            <a id="rm-link">Read more...</a>
+        </p>
+
+        <p id="rm1" class="hide-div">
+            Number of rolls determines how many words in your passphrase.
+            Number of dice determine which EFF word list to use: long
+            or short. Defaults to 5 dice and 5 rolls for words
+            type.
+        <p>
+        <p id="rm2" class="hide-div">
+            Mixed and numbers type don't use dice, but instead use
+            length. Defaults to 20. Longer passwords are better.
+            <a id="rl-link">Read less...</a>
+        </p>
+    </section>
+
+    <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
+
+        <div>
+            Secret Type (words, numbers, or mixed)<br>
+            <label class="radio-inline">
+                <input type="radio" name="type" id="words" value="words" checked>
+                Words
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="type" id="mixed" value="mixed">
+                Mixed
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="type" id="numbers" value="numbers">
+                Numbers
+            </label>
+        </div>
+
+        <hr>
+
+        <div>
+            Number of dice<br>
+            <label class="radio-inline">
+                <input type="radio" name="dice" id="dice4" value="4">
+                4
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="dice" id="dice5" value="5" checked>
+                5
+            </label>
+        </div>
+
+        <hr>
+
+        <div>
+            Number of rolls<br>
+            <label class="radio-inline">
+                <input type="radio" name="rolls" id="rolls3" value="3">
+                3
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="rolls" id="rolls4" value="4">
+                4
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="rolls" id="rolls5" value="5" checked>
+                5
+            </label>
+        </div>
+
+        <hr>
+
+        <div>
+            <label>Password length<br>
+                <input type="text" name="length" id="length" placeholder="20">
+            </label>
+        </div>
+
+        <div class="btn-container">
+            <button id="generate" class="btn btn-primary btn-block" type="submit" value="">
+                Generate
+            </button>
+        </div>
+
+        <hr>
+
+        <div>
+            <label>Playground<br>
+                <textarea name="secret" rows="5" cols="50"></textarea>
+            </label>
+        </div>
+
+    </form>
+
+    <div id="spinner" class="spinner" style="display: none;">
+        <img id="img-spinner" src="{{ url_for('static', filename='images/spinner.gif') }}" alt="Generating...">
+    </div>
+
+    {% endif %}
+{% endblock %}
