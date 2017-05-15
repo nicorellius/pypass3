@@ -2,31 +2,7 @@
 {% block body %}
     {% if session.logged_in %}
 
-    <section class="instructions top-mar-1em">
-        <p>
-            Make robust secrets with random characters, words, or numbers, using
-            <a href="https://www.random.org" target="_blank">RANDOM.ORG</a>
-            mostly random strings and numbers. Choose number of dice and how
-            many times to roll to create passphrases of common words.
-            <a id="rm-link">Read more...</a>
-        </p>
-
-        <p id="rm1" class="hide-div">
-            Number of rolls determines how many words in your passphrase.
-            Number of dice determine which EFF word list to use: long
-            or short. Defaults to 5 dice and 5 rolls and long word list
-            for words type.
-        <p>
-        <p id="rm2" class="hide-div">
-            Mixed and numbers type don't use dice, but instead use length.
-            Defaults to 20. Longer passwords are better. Mixed type uses a
-            character list containing alphanumeric with capitals, and these
-            additional special characters: ( ! @ # $ % ^ & * _ + = - ? ~ )
-            <a id="rl-link">Read less...</a>
-        </p>
-    </section>
-
-    <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
+    <form action="{{ url_for('generate_secret') }}" method="post" class="add-entry">
 
         <div class="radio-group">
             <p class="short-p">Secret Type<p>
@@ -42,9 +18,22 @@
                 <input type="radio" name="type" id="numbers" value="numbers">
                 Numbers
             </label>
+            <label class="radio-inline">
+                <input type="radio" name="type" id="uuid" value="uuid">
+                <small><strong>*And a bonus option: UUID</strong></small>
+            </label>
         </div>
 
+        <!--<div id="encrypt-option" class="checkbox float-right">-->
+            <!--<label for="encrypt">-->
+                <!--<input id="encrypt" type="checkbox"> Encrypt Result?-->
+            <!--</label>-->
+        <!--</div>-->
+
         <hr>
+        <!--{% for item in secrets %}-->
+            <!--{{ item.x }}-->
+        <!--{% endfor %}-->
 
         <div class="radio-group">
             <p class="short-p">Number of dice</p>
@@ -78,16 +67,16 @@
 
         <hr>
 
-        <div>
-            <label>Password length<br class="short-p">
+        <div class="field-group">
+            <label>Password length<br>
                 <input type="text" name="length" id="length" placeholder="20">
             </label>
-        </div>
 
-        <div class="btn-container">
-            <button id="generate" class="btn btn-primary btn-block" type="submit" value="">
-                Generate
-            </button>
+            <div class="btn-container">
+                <button id="generate" class="btn btn-custom-primary btn-block" type="submit" value="">
+                    <i class="glyphicon glyphicon-refresh"></i> &nbsp; Generate
+                </button>
+            </div>
         </div>
 
         <hr>
@@ -97,6 +86,14 @@
                 <textarea name="secret" rows="5" cols="50"></textarea>
             </label>
         </div>
+
+        <!--<button style="width: 150px;" class="btn btn-custom-success" type="submit">-->
+            <!--Encrypt-->
+        <!--</button>-->
+
+        <!--<button style="float: right; width: 150px;" class="btn btn-custom-danger" type="submit">-->
+            <!--Decrypt-->
+        <!--</button>-->
 
     </form>
 
