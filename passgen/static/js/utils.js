@@ -1,12 +1,15 @@
 function show() {
     document.getElementById('rm1').className = 'show-div';
     document.getElementById('rm2').className = 'show-div';
+    document.getElementById('rm3').className = 'show-div';
     document.getElementById('rm-link').className = 'hide-div';
 
 }
+
 function hide() {
     document.getElementById('rm1').className = 'hide-div';
     document.getElementById('rm2').className = 'hide-div';
+    document.getElementById('rm3').className = 'show-div';
     document.getElementById('rm-link').className = 'show-div';
 
 }
@@ -21,18 +24,29 @@ rl_link.onclick = hide;
 
 $(document).ready(function() {
     // add handler
-    $('#mixed, #numbers').click(function(){
+    $('#mixed, #numbers').click(function() {
 
-        // find all checked and cancel checked
         $('#dice4').prop('disabled', true);
         $('#dice5').prop('disabled', true);
         $('#rolls3').prop('disabled', true);
         $('#rolls4').prop('disabled', true);
         $('#rolls5').prop('disabled', true);
 
-        if ($('#length').val() === '') {
-            $('#length').val('20');
-        }
+        $('#length').val('20');
+    });
+});
+
+$(document).ready(function() {
+
+    $('#uuid').click(function() {
+
+        $('#dice4').prop('disabled', true);
+        $('#dice5').prop('disabled', true);
+        $('#rolls3').prop('disabled', true);
+        $('#rolls4').prop('disabled', true);
+        $('#rolls5').prop('disabled', true);
+
+        $('#length').val('32');
     });
 });
 
@@ -55,7 +69,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
     // add handler
-    $('#words').click(function(){
+    $('#words').click(function() {
 
         // find all checked and cancel checked
         $('input:radio:checked').prop('disabled', false);
