@@ -2,13 +2,21 @@ import os
 import re
 import random
 import hashlib
-# import binascii
+import binascii
 import datetime
 import uuid
+import base64
+
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from rdoclient import RandomOrgClient
 
 import config
+
+from generate import generate_password
 
 
 # get time in format I like
@@ -24,11 +32,12 @@ def get_timestamp():
     return dt.strftime("%Y-%m-%d %X")
 
 
-def gen_uid(length=10):
+def gen_uid(length=10, rid=False):
     """
-    Function to generate random uuid of varying length for application
+    Function to generate random id of varying length for application
 
     :param length: length of uid
+    :param rid: random ID
     :return uid: formatted string
     """
 
@@ -36,12 +45,16 @@ def gen_uid(length=10):
     # python 3.x version
     uid = uuid.uuid4()
 
-    tmp_uid = re.sub('-', '', str(uid))
+    if rid is False:
+        return uid
+
+    else:
+        tmp_uid = re.sub('-', '', str(uid))
 
     return ''.join(random.sample(list(tmp_uid), length))
 
 
-def hash_password(password, salt_length=16, iterations=1000000, encoding='utf-8'):
+def hash_password(password, salt_length=16, iterations=10000, encoding='utf-8'):
     """
     Function to securely hash password with variable salt and iterations
     :param password: input secret
@@ -61,9 +74,46 @@ def hash_password(password, salt_length=16, iterations=1000000, encoding='utf-8'
     )
 
     # Non-bytes version
-    # return binascii.hexlify(hashed_password)
+    return binascii.hexlify(hashed_password)
+
     # Bytes version
-    return hashed_password
+    # return hashed_password
+
+
+def crypto_hash(secret, default_salt='tTn0ICSQ8d!pVGULB+L='):
+
+    """
+    Hashing to store secret with password
+    :param password: 
+    :param secret: 
+    :param default_salt: 
+    :return: 
+    """
+
+    backend = default_backend()
+
+    if not default_salt:
+        # os.urandom(16)  # this calls OS random generator
+        default_salt = generate_password(output_type='mixed',
+                                         password_length=16)
+
+    salt = bytes(default_salt, 'utf-8')
+
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
+                     length=32, salt=salt, iterations=100000,
+                     backend=backend)
+
+    key = kdf.derive(bytes(secret, 'utf-8'))
+
+    print(key)
+
+    kdf2 = PBKDF2HMAC(algorithm=hashes.SHA256(),
+                      length=32, salt=salt, iterations=100000,
+                      backend=backend)
+
+    verify = kdf2.verify(bytes(secret, 'utf-8'), key)
+
+    return verify
 
 
 def get_roc(api_key=config.API_KEY):
