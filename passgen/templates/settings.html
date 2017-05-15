@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block body %}
+    {% if session.logged_in %}
+
+    <section class="instructions top-mar-1em">
+        <p>
+            Adjust settings here, like wordlists, characters for mixed secrets, etc...
+        </p>
+    </section>
+
+    <form action="{{ url_for('settings') }}" method="post" class="add-entry">
+
+        <div>
+            <div class="form-group">
+                <label for="edit-chars">Add extra characters</label>
+                <input id="edit-chars" type="text" class="form-control" name="">
+            </div>
+
+            <div class="form-group">
+                <label for="word-list-url">
+                    Use a different word list (enter full URL to word list)
+                </label>
+                <input id="word-list-url" type="text" class="form-control" name="">
+            </div>
+
+            <div class="form-group">
+                <label for="word-list-file">
+                    Use a different word list (upload file)
+                </label>
+                <input id="word-list-file" type="text" class="form-control" name="">
+            </div>
+
+            <button style="width: 150px;" class="btn btn-custom-success" type="submit">
+                Save
+            </button>
+
+            <a href="/" style="float: right; width: 150px;" class="btn btn-custom-danger" type="submit" role="button">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+    <div id="spinner" class="spinner" style="display: none;">
+        <img id="img-spinner" src="{{ url_for('static', filename='images/spinner.gif') }}" alt="Generating...">
+    </div>
+
+    {% endif %}
+{% endblock %}
