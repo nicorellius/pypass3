@@ -5,9 +5,8 @@ import hashlib
 import binascii
 import datetime
 import uuid
-import base64
+import time
 
-from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -99,21 +98,26 @@ def crypto_hash(secret, default_salt='tTn0ICSQ8d!pVGULB+L='):
 
     salt = bytes(default_salt, 'utf-8')
 
+    now = time.clock()
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
-                     length=32, salt=salt, iterations=100000,
+                     length=32, salt=salt, iterations=1000000,
                      backend=backend)
 
     key = kdf.derive(bytes(secret, 'utf-8'))
+    later = time.clock() - now
+    print(later)
 
-    print(key)
+    return key.decode('utf-8')
 
-    kdf2 = PBKDF2HMAC(algorithm=hashes.SHA256(),
-                      length=32, salt=salt, iterations=100000,
-                      backend=backend)
-
-    verify = kdf2.verify(bytes(secret, 'utf-8'), key)
-
-    return verify
+    # print(key)
+    #
+    # kdf2 = PBKDF2HMAC(algorithm=hashes.SHA256(),
+    #                   length=32, salt=salt, iterations=100000,
+    #                   backend=backend)
+    #
+    # verify = kdf2.verify(bytes(secret, 'utf-8'), key)
+    #
+    # return verify
 
 
 def get_roc(api_key=config.API_KEY):
