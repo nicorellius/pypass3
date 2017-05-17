@@ -56,7 +56,7 @@ def generate_password(number_rolls: int = 5, number_dice: int =5,
 
     chars = config.CHARACTERS
     factor = 1
-    api_max_length = 20
+    api_max_length = config.ROC_API_MAX_LENGTH
     result = []
     roc = utils.get_roc()
 
