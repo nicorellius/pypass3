@@ -9,7 +9,7 @@ function show() {
 function hide() {
     document.getElementById('rm1').className = 'hide-div';
     document.getElementById('rm2').className = 'hide-div';
-    document.getElementById('rm3').className = 'show-div';
+    document.getElementById('rm3').className = 'hide-div';
     document.getElementById('rm-link').className = 'show-div';
 
 }
@@ -21,6 +21,21 @@ var rl_link = document.getElementById('rl-link');
 rl_link.onclick = hide;
 
 // var $ = jQuery.noConflict();
+
+// $(document).ready(function() {
+//     // add handler
+//     $('#run-again').click(function() {
+//         $('#words').prop('disabled', true);
+//         $('#mixed').prop('disabled', true);
+//         $('#numbers').prop('disabled', true);
+//         $('#dice4').prop('disabled', true);
+//         $('#dice5').prop('disabled', true);
+//         $('#rolls3').prop('disabled', true);
+//         $('#rolls4').prop('disabled', true);
+//         $('#rolls5').prop('disabled', true);
+//     });
+// });
+
 
 $(document).ready(function() {
     // add handler
@@ -88,7 +103,7 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-    $('#generate').click(function() {
+    $('#generate, #run-again').click(function() {
         $('#spinner').show();
     });
 });
