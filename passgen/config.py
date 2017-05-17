@@ -27,3 +27,5 @@ API_KEY = '59052bc4-840b-4923-96b7-90332167bc8c'
 CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
              'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
              '1234567890!@#$%^&*()_+=-?~'
+
+ROC_API_MAX_LENGTH = 20
