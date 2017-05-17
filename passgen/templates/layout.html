@@ -39,7 +39,7 @@
     {% for message in get_flashed_messages() %}
     {% if message == 'You were logged in' %}
     <div class="flash">
-        {{ message }}>
+        {{ message }}
     </div>
     {% elif message == 'You were logged out' %}
     <div class="flash">
@@ -55,7 +55,7 @@
                 <pre id="p1">{{ message }}</pre>
                 <button id="p2" class="btn btn-sm btn-custom-success">Copy</button>
             </div>
-            {% endif%}
+            {% endif %}
         {% endfor %}
     {% endif%}
 
@@ -115,6 +115,10 @@
         </p>
     </section>
     {% block body %}{% endblock %}
+
+    <div id="spinner" class="spinner" style="display: none;">
+        <img id="img-spinner" src="{{ url_for('static', filename='images/spinner.gif') }}" alt="Generating...">
+    </div>
 
 </div>
 
