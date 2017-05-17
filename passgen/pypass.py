@@ -12,6 +12,8 @@ Copyright (c) 2017 Nick Vincent-Maloney <nicorellius@gmail.com>
 """
 import logging
 
+from collections import namedtuple
+
 from flask import (Flask, request, session, redirect,
                    url_for, abort, render_template, flash)
 
@@ -58,16 +60,20 @@ logging.basicConfig(
     level=logging.DEBUG
 )
 
+persist_results = None
+
 
 @app.route('/')
 def home():
 
-    secrets = mongo.db.secret_collection.find({"x": 1})
+    secrets = mongo.db.secret_collection.find_one()
     return render_template('generate.html', secrets=secrets)
 
 
 @app.route('/generate', methods=['POST'])
 def generate_secret():
+
+    global persist_results
 
     if not session.get('logged_in'):
         abort(401)
@@ -78,11 +84,60 @@ def generate_secret():
         # TODO: for the radio buttons... not a field for request.form['field']?
 
         # TODO: figure out how to validate form input
-        output_type = request.form['type']
+        output_type = request.form.get('type', 'words')
         dice = request.form.get('dice', 5)
         rolls = request.form.get('rolls', 5)
-        length = request.form['length']
+        # TODO: check out generate.py line 93, gives warning in console:
+        # TODO: '<=' not supported between instances of 'str' and 'int'
+        length = request.form.get('length', 20)
         num = 1
+
+        submit = request.form['submit']
+
+        logging.info('[{0}] Button pressed: {1}'.format(
+            utils.get_timestamp(), submit))
+
+        Results = namedtuple('Results', 'r d n o l')
+        persist_results = Results(rolls, dice, num, output_type, length)
+
+        logging.info('[{0}] Form data: {1}'.format(
+            utils.get_timestamp(), persist_results))
+
+        collection = mongo.db.form_data_collection
+        r = {'form_set_data': persist_results}
+        r_id = collection.insert_one(r).inserted_id
+
+        logging.info('[{0}] Collection ID: {1}'.format(
+            utils.get_timestamp(), r_id))
+
+        if request.form['submit'] == 'Run Again':
+
+            try:
+                secret = generate_password(number_rolls=int(persist_results.r),
+                                           number_dice=int(persist_results.d),
+                                           how_many=persist_results.n,
+                                           output_type=str(persist_results.o),
+                                           password_length=persist_results.l)
+
+                # flash(utils.crypto_hash(secret))
+
+                collection = mongo.db.secret_collection
+                s = {'secret': secret}
+                s_id = collection.insert_one(s).inserted_id
+
+                logging.info('[{0}] Collection ID: {1}'.format(
+                    utils.get_timestamp(), s_id))
+
+                flash(secret)
+
+                _log_output_params(output_type, dice, rolls, length, num)
+
+                return redirect(url_for('home'))
+
+            except Exception as e:
+                print(e)
+        else:
+            pass
 
         if not length:
             length = 20
@@ -90,30 +145,23 @@ def generate_secret():
         else:
             length = int(length)
 
-        # if output_type is 'mixed' or output_type is 'numbers':
-        #     dice, rolls = 5, 5
+        if output_type is 'mixed' or output_type is 'numbers':
+            dice, rolls = 5, 5
 
-        if output_type == 'uuid':
+        elif output_type == 'uuid':
 
             if length > 32:
                 flash("UUID can be a maximum of 32 characters")
-                return redirect(url_for('home'))
 
             elif length == 32:
                 secret = utils.gen_uid()
                 flash(secret)
-                return redirect(url_for('home'))
 
-            secret = utils.gen_uid(length, True)
-            flash(secret)
+            else:
+                secret = utils.gen_uid(length, True)
+                flash(secret)
+
             return redirect(url_for('home'))
-
-        logging.info(
-            '[{0}] type: {1}, '
-            'dice: {2}, rolls: {3}, '
-            'length: {4}, number: {5}'.format(utils.get_timestamp(),
-                                              output_type, dice, rolls,
-                                              length, num))
 
         try:
             secret = generate_password(number_rolls=int(rolls),
@@ -121,18 +169,15 @@ def generate_secret():
                                        how_many=num,
                                        output_type=str(output_type),
                                        password_length=length)
-            # flash(utils.crypto_hash(secret))
+
+            # flash(utils.crypto_hash(
+            #     secret,
+            #     'K1vGZPsxgd6SEmkpD?xIG-g_8-GnIC!8)EPzk_=45chrNE%51g')
+            # )
+
             flash(secret)
 
-            logging.info(
-                '[{0}] type(type): {1}, '
-                'type(dice): {2}, type(rolls): {3}, '
-                'type(length): {4}, type(number): {5}'.format(
-                    utils.get_timestamp(),
-                    type(output_type), type(dice),
-                    type(rolls), type(length),
-                    type(num))
-            )
+            _log_output_params(output_type, dice, rolls, length, num)
 
             return redirect(url_for('home'))
 
@@ -189,3 +234,21 @@ def logout():
 
 if __name__ == '__main__':
     app.run()
+
+
+def _log_output_params(output_type, dice, rolls, length, num):
+
+    return logging.info(
+        '[{0}] Parameters:\n'
+        '        output type: {1} {2}\n'
+        '     number of dice: {3}     {4}\n'
+        '    number of rolls: {5}     {6}\n'
+        '      secret length: {7}    {8}\n'
+        '  number of secrets: {9}     {10}'.format(
+            utils.get_timestamp(),
+            output_type, type(output_type),
+            dice, type(dice),
+            rolls, type(rolls),
+            length, type(length),
+            num, type(num))
+    )
