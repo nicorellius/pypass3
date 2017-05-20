@@ -97,7 +97,7 @@ def generate_secret():
         logging.info('[{0}] Button pressed: {1}'.format(
             utils.get_timestamp(), submit))
 
-        Results = namedtuple('Results', 'r d n o l')
+        Results = namedtuple('Results', 'rolls, dice, num, output, length,')
         persist_results = Results(rolls, dice, num, output_type, length)
 
         logging.info('[{0}] Form data: {1}'.format(
@@ -113,11 +113,13 @@ def generate_secret():
         if request.form['submit'] == 'Run Again':
 
             try:
-                secret = generate_password(number_rolls=int(persist_results.r),
-                                           number_dice=int(persist_results.d),
-                                           how_many=persist_results.n,
-                                           output_type=str(persist_results.o),
-                                           password_length=persist_results.l)
+                secret = generate_password(
+                    number_rolls=int(persist_results.rolls),
+                    number_dice=int(persist_results.dice),
+                    how_many=persist_results.num,
+                    output_type=str(persist_results.output),
+                    password_length=persist_results.length
+                )
 
                 # flash(utils.crypto_hash(secret))
 
