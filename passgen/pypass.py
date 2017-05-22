@@ -17,8 +17,8 @@ from collections import namedtuple
 from flask import (Flask, request, session, redirect,
                    url_for, abort, render_template, flash)
 
-from flask_debugtoolbar import DebugToolbarExtension
-from flask_pymongo import PyMongo
+# from flask_debugtoolbar import DebugToolbarExtension
+# from flask_pymongo import PyMongo
 
 import utils
 import config
@@ -49,7 +49,7 @@ app.config.update(dict(
 app.config.from_envvar('PYPASS_SETTINGS', silent=True)
 
 app.debug = config.DEBUG
-toolbar = DebugToolbarExtension(app)
+# toolbar = DebugToolbarExtension(app)
 
 
 # Set up logging configuration
