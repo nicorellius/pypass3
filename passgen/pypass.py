@@ -39,12 +39,12 @@ app.config.update(dict(
 # mongo db setup
 # TODO: set envars for these secrets
 # TODO: figure out why these can't belong to the config.update above
-app.config['MONGO_DBNAME'] = 'pypass'
-app.config['MONGO_PORT'] = '12345'
-app.config['MONGO_USERNAME'] = 'pypass'
-app.config['MONGO_PASSWORD'] = 'gn5n_1xSb5ITqoKmG_oe'
-
-mongo = PyMongo(app)
+# app.config['MONGO_DBNAME'] = 'pypass'
+# app.config['MONGO_PORT'] = '12345'
+# app.config['MONGO_USERNAME'] = 'pypass'
+# app.config['MONGO_PASSWORD'] = 'gn5n_1xSb5ITqoKmG_oe'
+#
+# mongo = PyMongo(app)
 
 app.config.from_envvar('PYPASS_SETTINGS', silent=True)
 
@@ -66,8 +66,8 @@ persist_results = None
 @app.route('/')
 def home():
 
-    secrets = mongo.db.secret_collection.find_one()
-    return render_template('generate.html', secrets=secrets)
+    # secrets = mongo.db.secret_collection.find_one()
+    return render_template('generate.html')  # , secrets=secrets)
 
 
 @app.route('/generate', methods=['POST'])
@@ -103,12 +103,12 @@ def generate_secret():
         logging.info('[{0}] Form data: {1}'.format(
             utils.get_timestamp(), persist_results))
 
-        collection = mongo.db.form_data_collection
-        r = {'form_set_data': persist_results}
-        r_id = collection.insert_one(r).inserted_id
+        # collection = mongo.db.form_data_collection
+        # r = {'form_set_data': persist_results}
+        # r_id = collection.insert_one(r).inserted_id
 
-        logging.info('[{0}] Collection ID: {1}'.format(
-            utils.get_timestamp(), r_id))
+        # logging.info('[{0}] Collection ID: {1}'.format(
+        #     utils.get_timestamp(), r_id))
 
         if request.form['submit'] == 'Run Again':
 
