@@ -48,7 +48,9 @@ app.config.update(dict(
 
 app.config.from_envvar('PYPASS_SETTINGS', silent=True)
 
-app.debug = config.DEBUG
+# app.debug = config.DEBUG
+DEBUG = False
+# app.debug = False
 # toolbar = DebugToolbarExtension(app)
 
 
