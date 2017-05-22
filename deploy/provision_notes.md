@@ -2,13 +2,13 @@
 
 ## Required packages
 
-- Python 3
-- Git
+- python 3
+- git
 - nginx
 - pip
 - virtualenvwrapper
 - uwsgi
-- postgresql
+- mongodb
 - certbot (let's encrypt)
 
 **Server file structure and user**
@@ -22,12 +22,13 @@ Add user
 
 `useradd -m -s /bin/bash django`
 
-**Ubuntu, PostgreSQL, Python packages**
+**Ubuntu, MongoDB, Python packages**
 
 `apt-get update`
 `apt-get install vim git nginx python-dev`  
 `apt-get install python3 python3-dev python-pip`  
-`apt-get install postgresql`
+
+https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 **virtualenvwrapper set up**
 
@@ -51,11 +52,11 @@ Add user
 ## nginx virtual host configuration
 
 - See the `nginx/template.conf` for template.
-- Set up configuration at `/etc/nginx/sites-available/pdxpixel`
+- Set up configuration at `/etc/nginx/sites-available/pypass`
 
 ## uWSGI compilation and configuration
 
-- Set up configuration at `/etc/uwsgi/sites/pdxpixel.ini`
+- Set up configuration at `/etc/uwsgi/sites/pypass.ini`
 - Download uWSGI and build with no Python, so custom plugins ca be created:
     `wget http://projects.unbit.it/downloads/uwsgi-2.0.12.tar.gz`
 - Unzip source to:
@@ -78,19 +79,19 @@ Add user
 
 ## Install and set up project, requirements
 
-`cd ~/sites`
-`git clone http://github.com/nicorellius/pdxpixel.git`
-`apt-get install libjpeg8-dev postgresql-server.9.3`
-`pip install requirements.txt`
+- `cd ~/sites`
+- `git clone http://github.com/nicorellius/pdxpixel.git`
+- `apt-get install libjpeg8-dev postgresql-server.9.3`
+- `pip install requirements.txt`
 
 ## TLS/SSL certificates
 
 Lets Encrypt certificates can be installed using `certbot`:
 
-`cd /home/$USER`
-`wget https://dl.eff.org/certbot-auto`
-`chmod a+x certbot-auto`
-`./certbot-auto certonly`
+- `cd /home/$USER`  
+- `wget https://dl.eff.org/certbot-auto`  
+- `chmod a+x certbot-auto`  
+- `./certbot-auto certonly`
 
 Note that if you are running CloudFlare in front of your site, you need to disable DNS and HTTP proxy temporarily while you create the certificates.
 
