@@ -28,6 +28,7 @@ Add user
 `apt-get install vim git nginx python-dev`  
 `apt-get install python3 python3-dev python-pip`  
 
+MongoDB can be installed based on these instructions:
 https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 **virtualenvwrapper set up**
@@ -41,13 +42,11 @@ https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 **Make virtualenv for Python 3**
 
-`mkvirtualenv --python=/user/bin/python3 pdxpixel`
+`mkvirtualenv --python=/user/local/bin/python3.x pdxpixel`
 
-## Set up PostgreSQL
+## Set up MongoDB
 
-`su - postgres`
-`createuser --interactive`  
-`createdb pdxpixel`
+
 
 ## nginx virtual host configuration
 
@@ -70,6 +69,9 @@ https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
     `mv python3x_plugin.so /usr/lib/uwsgi/plugins/`
 - Make sure to adjust permissions: `root:root 644`
 - Finally, add plugin declaration to uwsgi INI file. See `uwsgi/template.ini` for template.
+
+Alternatively, you can install LTS using `pip`:
+
 
 ## Upstart scripts
 
