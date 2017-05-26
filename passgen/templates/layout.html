@@ -19,12 +19,12 @@
 <div class="page">
 
     <h1 id="main-title">
-        <a href="/">
-            <img class="logo" src="{{ url_for('static', filename='images/lock_icon.png') }}">
+        <a id="logo" href="/">
+            <img src="{{ url_for('static', filename='images/lock_icon.png') }}">
         </a>
         Password Generator
-        <a href="/#settings">
-            <i id="settings-gear" class="glyphicon glyphicon-cog" aria-hidden="true" title="Settings"></i>
+        <a href="{{ url_for('settings') }}">
+            <i id="settings-gear" class="glyphicon glyphicon-cog" aria-hidden="true"></i>
         </a>
     </h1>
 
@@ -125,3 +125,4 @@
 <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
 <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ajax.js') }}"></script>
