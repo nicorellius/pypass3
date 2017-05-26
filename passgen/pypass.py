@@ -48,7 +48,9 @@ app.config.update(dict(
 
 app.config.from_envvar('PYPASS_SETTINGS', silent=True)
 
-app.debug = config.DEBUG
+# app.debug = config.DEBUG
+DEBUG = False
+# app.debug = False
 # toolbar = DebugToolbarExtension(app)
 
 
@@ -70,6 +72,7 @@ def home():
     return render_template('generate.html')  # , secrets=secrets)
 
 
+@app.before_request
 @app.route('/generate', methods=['POST'])
 def generate_secret():
 
@@ -79,6 +82,11 @@ def generate_secret():
         abort(401)
 
     if request.method == 'POST':
+
+        token = session.pop('_csrf_token', None)
+
+        if not token or token != request.form.get('_csrf_token'):
+            abort(400)
 
         # TODO: figure out why request.form.get(value, default) only works
         # TODO: for the radio buttons... not a field for request.form['field']?
@@ -236,6 +244,16 @@ def logout():
 
 if __name__ == '__main__':
     app.run()
+
+
+def _generate_csrf_token():
+
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = '12&lisjerfoasjfp8erywrt'  # utils.gen_uid(30)
+
+    return session['_csrf_token']
+
+app.jinja_env.globals['csrf_token'] = _generate_csrf_token
 
 
 def _log_output_params(output_type, dice, rolls, length, num):
