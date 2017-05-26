@@ -4,6 +4,8 @@
 
     <form action="{{ url_for('generate_secret') }}" method="post" class="add-entry">
 
+        <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
+
         <div class="radio-group">
             <p class="short-p">Secret Type<p>
             <label class="radio-inline">
