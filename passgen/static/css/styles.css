@@ -192,10 +192,19 @@ a i#settings-gear:hover {
     color: gray;
 }
 
-.logo {
-    width: 35px;
-    height: 35px;
-    margin-bottom: 8px;
+#logo img {
+    width: 25px;
+    height: 30px;
+    margin: 0 0 8px 0;
+}
+
+a#logo {
+    line-height: 30px !important;
+}
+
+a#logo:hover {
+    text-decoration: none;
+    opacity: 0.8;
 }
 
 a#rm-link:hover, a#rl-link:hover {
