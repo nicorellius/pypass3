@@ -59,29 +59,6 @@
         {% endfor %}
     {% endif%}
 
-    <!--{% if not session.logged_in %}-->
-        <!--<div class="metanav">-->
-            <!--<a href="{{ url_for('login') }}">log in</a>-->
-        <!--</div>-->
-        <!--{% for message in get_flashed_messages() %}-->
-        <!--<div class="flashy">{{ message }}</div>-->
-        <!--{% endfor %}-->
-    <!--{% else %}-->
-        <!--<div class="metanav">-->
-            <!--<span style="float: left; font-weight: bold;">Results</span>-->
-            <!--<a href="{{ url_for('logout') }}">log out</a>-->
-        <!--</div>-->
-        <!--{% for message in get_flashed_messages() %}-->
-        <!--<div class="flash">-->
-            <!--<pre id="p1">{{ message }}</pre>-->
-            <!--{% if session.logged_in %}-->
-            <!--{% if message != 'You were logged in' %}-->
-            <!--<button id="p2" class="btn btn-sm btn-success">Copy</button>-->
-            <!--{% endif %}-->
-            <!--{% endif%}-->
-        <!--</div>-->
-        <!--{% endfor %}-->
-    <!--{% endif %}-->
     <section class="instructions top-mar-1em">
         <p>
             Make robust secrets with random characters, words, or numbers, using
