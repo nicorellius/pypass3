@@ -13,41 +13,41 @@
 
 **Server file structure and user**
 
-Assuming `django` and `pdxpixel`
+Assuming user `flask` and project `pypass`
 
-`/home/django/sites/pdxpixel`  
-`/home/django/virtenvs/pdxpixel`
+    `/home/flask/site/pypass`
+    `/home/flask/virtenvs/pypass`
 
 Add user
 
-`useradd -m -s /bin/bash django`
+`useradd -m -s /bin/bash flask`
 
 **Ubuntu, MongoDB, Python packages**
 
-`apt-get update`
-`apt-get install vim git nginx python-dev`  
-`apt-get install python3 python3-dev python-pip`  
+    `apt-get update`
+    `apt-get install vim git nginx python-dev`
+    `apt-get install python3 python3-dev python-pip`
+
+MongoDB can be installed based on these instructions:
 
 https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 **virtualenvwrapper set up**
 
-`pip install virtualenvwrapper`  
+    `pip install virtualenvwrapper`  
 
 **Add to `~/.bashrc`**
 
-`export WORKON_HOME=$HOME/dev/virtenvs`  
-`source /usr/local/bin/virtualenvwrapper.sh`
+    `export WORKON_HOME=$HOME/virtenvs`
+    `source /usr/local/bin/virtualenvwrapper.sh`
 
 **Make virtualenv for Python 3**
 
-`mkvirtualenv --python=/user/bin/python3 pdxpixel`
+    `mkvirtualenv --python=/user/local/bin/python3.x pypass`
 
-## Set up PostgreSQL
+## Set up MongoDB
 
-`su - postgres`
-`createuser --interactive`  
-`createdb pdxpixel`
+
 
 ## nginx virtual host configuration
 
@@ -71,6 +71,9 @@ https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 - Make sure to adjust permissions: `root:root 644`
 - Finally, add plugin declaration to uwsgi INI file. See `uwsgi/template.ini` for template.
 
+Alternatively, you can install LTS using `pip`:
+
+
 ## Upstart scripts
 
 - Set up configuration at `/etc/init/uwsgi.conf`
@@ -79,19 +82,19 @@ https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 ## Install and set up project, requirements
 
-- `cd ~/sites`
-- `git clone http://github.com/nicorellius/pdxpixel.git`
-- `apt-get install libjpeg8-dev postgresql-server.9.3`
-- `pip install requirements.txt`
+    `cd ~/sites`
+    `git clone http://github.com/nicorellius/pypass.git`
+    `apt-get install libjpeg8-dev postgresql-server.9.3`
+    `pip install requirements.txt`
 
 ## TLS/SSL certificates
 
 Lets Encrypt certificates can be installed using `certbot`:
 
-- `cd /home/$USER`  
-- `wget https://dl.eff.org/certbot-auto`  
-- `chmod a+x certbot-auto`  
-- `./certbot-auto certonly`
+    `cd /home/$USER`
+    `wget https://dl.eff.org/certbot-auto`
+    `chmod a+x certbot-auto`
+    `./certbot-auto certonly`
 
 Note that if you are running CloudFlare in front of your site, you need to disable DNS and HTTP proxy temporarily while you create the certificates.
 
