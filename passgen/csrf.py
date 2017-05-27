@@ -54,7 +54,7 @@ def csrf(app, on_csrf=None):
 
         except NotFound:
             g._csrf_exempt = False
-    
+
     @app.before_request
     def _csrf_protect():
 
@@ -69,12 +69,12 @@ def csrf(app, on_csrf=None):
                     if on_csrf:
                         on_csrf(*app.match_request())
                     abort(400)
-    
+
     def generate_csrf_token():
 
         if '_csrf_token' not in session:
             session['_csrf_token'] = generate_secret(5, 5, 1, 'mixed', 30)
 
         return session['_csrf_token']
-    
+
     app.jinja_env.globals['csrf_token'] = generate_csrf_token

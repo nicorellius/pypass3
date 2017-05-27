@@ -43,7 +43,7 @@ https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 **Make virtualenv for Python 3**
 
-    `mkvirtualenv --python=/user/local/bin/python3.x pdxpixel`
+    `mkvirtualenv --python=/user/local/bin/python3.x pypass`
 
 ## Set up MongoDB
 
@@ -83,7 +83,7 @@ Alternatively, you can install LTS using `pip`:
 ## Install and set up project, requirements
 
     `cd ~/sites`
-    `git clone http://github.com/nicorellius/pdxpixel.git`
+    `git clone http://github.com/nicorellius/pypass.git`
     `apt-get install libjpeg8-dev postgresql-server.9.3`
     `pip install requirements.txt`
 
@@ -91,9 +91,9 @@ Alternatively, you can install LTS using `pip`:
 
 Lets Encrypt certificates can be installed using `certbot`:
 
-    `cd /home/$USER`  
-    `wget https://dl.eff.org/certbot-auto`  
-    `chmod a+x certbot-auto`  
+    `cd /home/$USER`
+    `wget https://dl.eff.org/certbot-auto`
+    `chmod a+x certbot-auto`
     `./certbot-auto certonly`
 
 Note that if you are running CloudFlare in front of your site, you need to disable DNS and HTTP proxy temporarily while you create the certificates.
