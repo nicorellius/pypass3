@@ -39,6 +39,14 @@ app.config.update(dict(
     DEBUG_TB_INTERCEPT_REDIRECTS=False,
 ))
 
+app.config.from_envvar('PYPASS_SETTINGS', silent=True)
+
+app.debug = config.DEBUG
+
+if app.debug is True:
+    from flask_debugtoolbar import DebugToolbarExtension
+    toolbar = DebugToolbarExtension(app)
+
 # mongo db setup
 # TODO: set envars for these secrets
 # TODO: figure out why these can't belong to the config.update above
@@ -48,14 +56,6 @@ app.config.update(dict(
 # app.config['MONGO_PASSWORD'] = 'gn5n_1xSb5ITqoKmG_oe'
 #
 # mongo = PyMongo(app)
-
-app.config.from_envvar('PYPASS_SETTINGS', silent=True)
-
-app.debug = config.DEBUG
-
-if app.debug is True:
-    from flask_debugtoolbar import DebugToolbarExtension
-    toolbar = DebugToolbarExtension(app)
 
 # Set up logging configuration
 # TODO: set up proper logging app with handler, formatter, etc...
