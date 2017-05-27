@@ -4,6 +4,8 @@
 
     <form action="{{ url_for('generate_secret') }}" method="post" class="add-entry">
 
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+
         <div class="radio-group">
             <p class="short-p">Secret Type<p>
             <label class="radio-inline">
@@ -24,16 +26,7 @@
             </label>
         </div>
 
-        <!--<div id="encrypt-option" class="checkbox float-right">-->
-            <!--<label for="encrypt">-->
-                <!--<input id="encrypt" type="checkbox"> Encrypt Result?-->
-            <!--</label>-->
-        <!--</div>-->
-
         <hr>
-        {% for item in secrets %}
-            {{ item.secret }}
-        {% endfor %}
 
         <div class="radio-group">
             <p class="short-p">Number of dice</p>
@@ -79,27 +72,6 @@
                 </button>
             </div>
         </div>
-
-        <!--<button style="width: 150px;" class="btn btn-custom-success" type="submit">-->
-            <!--Encrypt-->
-        <!--</button>-->
-
-        <!--<button style="float: right; width: 150px;" class="btn btn-custom-danger" type="submit">-->
-            <!--Decrypt-->
-        <!--</button>-->
-
-        {% if session.logged_in %}
-        {% for message in get_flashed_messages() %}
-            {% if message != 'You were logged in' %}
-            <div class="btn1-container">
-                <button id="run-again" class="btn btn-custom-default btn-block"
-                        type="submit" name="submit" value="Run Again">
-                    <i class="glyphicon glyphicon-repeat"></i> &nbsp; Run Again
-                </button>
-            </div>
-            {% endif %}
-        {% endfor %}
-        {% endif%}
 
     </form>
 
