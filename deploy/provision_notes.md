@@ -15,8 +15,8 @@
 
 Assuming `django` and `pdxpixel`
 
-`/home/django/sites/pdxpixel`  
-`/home/django/virtenvs/pdxpixel`
+    `/home/django/sites/pdxpixel`
+    `/home/django/virtenvs/pdxpixel`
 
 Add user
 
@@ -24,25 +24,26 @@ Add user
 
 **Ubuntu, MongoDB, Python packages**
 
-`apt-get update`
-`apt-get install vim git nginx python-dev`  
-`apt-get install python3 python3-dev python-pip`  
+    `apt-get update`
+    `apt-get install vim git nginx python-dev`
+    `apt-get install python3 python3-dev python-pip`
 
 MongoDB can be installed based on these instructions:
+
 https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 **virtualenvwrapper set up**
 
-`pip install virtualenvwrapper`  
+    `pip install virtualenvwrapper`  
 
 **Add to `~/.bashrc`**
 
-`export WORKON_HOME=$HOME/dev/virtenvs`  
-`source /usr/local/bin/virtualenvwrapper.sh`
+    `export WORKON_HOME=$HOME/dev/virtenvs`
+    `source /usr/local/bin/virtualenvwrapper.sh`
 
 **Make virtualenv for Python 3**
 
-`mkvirtualenv --python=/user/local/bin/python3.x pdxpixel`
+    `mkvirtualenv --python=/user/local/bin/python3.x pdxpixel`
 
 ## Set up MongoDB
 
@@ -81,19 +82,19 @@ Alternatively, you can install LTS using `pip`:
 
 ## Install and set up project, requirements
 
-- `cd ~/sites`
-- `git clone http://github.com/nicorellius/pdxpixel.git`
-- `apt-get install libjpeg8-dev postgresql-server.9.3`
-- `pip install requirements.txt`
+    `cd ~/sites`
+    `git clone http://github.com/nicorellius/pdxpixel.git`
+    `apt-get install libjpeg8-dev postgresql-server.9.3`
+    `pip install requirements.txt`
 
 ## TLS/SSL certificates
 
 Lets Encrypt certificates can be installed using `certbot`:
 
-- `cd /home/$USER`  
-- `wget https://dl.eff.org/certbot-auto`  
-- `chmod a+x certbot-auto`  
-- `./certbot-auto certonly`
+    `cd /home/$USER`  
+    `wget https://dl.eff.org/certbot-auto`  
+    `chmod a+x certbot-auto`  
+    `./certbot-auto certonly`
 
 Note that if you are running CloudFlare in front of your site, you need to disable DNS and HTTP proxy temporarily while you create the certificates.
 
