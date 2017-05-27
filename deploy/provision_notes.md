@@ -13,14 +13,14 @@
 
 **Server file structure and user**
 
-Assuming `django` and `pdxpixel`
+Assuming user `flask` and project `pypass`
 
-    `/home/django/sites/pdxpixel`
-    `/home/django/virtenvs/pdxpixel`
+    `/home/flask/site/pypass`
+    `/home/flask/virtenvs/pypass`
 
 Add user
 
-`useradd -m -s /bin/bash django`
+`useradd -m -s /bin/bash flask`
 
 **Ubuntu, MongoDB, Python packages**
 
@@ -38,7 +38,7 @@ https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 **Add to `~/.bashrc`**
 
-    `export WORKON_HOME=$HOME/dev/virtenvs`
+    `export WORKON_HOME=$HOME/virtenvs`
     `source /usr/local/bin/virtualenvwrapper.sh`
 
 **Make virtualenv for Python 3**
