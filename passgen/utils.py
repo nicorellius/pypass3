@@ -15,7 +15,7 @@ from rdoclient import RandomOrgClient
 
 import config
 
-from generate import generate_password
+from generate import generate_secret
 
 
 # get time in format I like
@@ -93,8 +93,8 @@ def crypto_hash(secret, default_salt='tTn0ICSQ8d!pVGULB+L='):
 
     if not default_salt:
         # os.urandom(16)  # this calls OS random generator
-        default_salt = generate_password(output_type='mixed',
-                                         password_length=16)
+        default_salt = generate_secret(output_type='mixed',
+                                       password_length=16)
 
     salt = bytes(default_salt, 'utf-8')
 
