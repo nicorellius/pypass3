@@ -17,16 +17,19 @@ from collections import namedtuple
 from flask import (Flask, request, session, redirect,
                    url_for, abort, render_template, flash)
 
-# from flask_debugtoolbar import DebugToolbarExtension
 # from flask_pymongo import PyMongo
 
 import utils
 import config
 
-from generate import generate_password
+from csrf import csrf
+from generate import generate_secret
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+
+# Protect with CSRF
+csrf(app)
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
@@ -49,8 +52,10 @@ app.config.update(dict(
 app.config.from_envvar('PYPASS_SETTINGS', silent=True)
 
 app.debug = config.DEBUG
-# toolbar = DebugToolbarExtension(app)
 
+if app.debug is True:
+    from flask_debugtoolbar import DebugToolbarExtension
+    toolbar = DebugToolbarExtension(app)
 
 # Set up logging configuration
 # TODO: set up proper logging app with handler, formatter, etc...
@@ -113,7 +118,7 @@ def generate_secret():
         if request.form['submit'] == 'Run Again':
 
             try:
-                secret = generate_password(
+                secret = generate_secret(
                     number_rolls=int(persist_results.rolls),
                     number_dice=int(persist_results.dice),
                     how_many=persist_results.num,
@@ -166,11 +171,11 @@ def generate_secret():
             return redirect(url_for('home'))
 
         try:
-            secret = generate_password(number_rolls=int(rolls),
-                                       number_dice=int(dice),
-                                       how_many=num,
-                                       output_type=str(output_type),
-                                       password_length=length)
+            secret = generate_secret(number_rolls=int(rolls),
+                                     number_dice=int(dice),
+                                     how_many=num,
+                                     output_type=str(output_type),
+                                     password_length=length)
 
             # flash(utils.crypto_hash(
             #     secret,
@@ -201,7 +206,7 @@ def settings():
 # def save_settings():
 #     pass
 
-
+# @app.before_request
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -234,10 +239,6 @@ def logout():
     return redirect(url_for('login'))
 
 
-if __name__ == '__main__':
-    app.run()
-
-
 def _log_output_params(output_type, dice, rolls, length, num):
 
     return logging.info(
@@ -254,3 +255,7 @@ def _log_output_params(output_type, dice, rolls, length, num):
             length, type(length),
             num, type(num))
     )
+
+
+if __name__ == '__main__':
+    app.run()
