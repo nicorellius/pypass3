@@ -31,9 +31,9 @@ logging.basicConfig(
 )
 
 
-def generate_password(number_rolls: int = 5, number_dice: int =5,
-                      how_many: int = 1, output_type: str = 'words',
-                      password_length: int = 20):
+def generate_secret(number_rolls: int = 5, number_dice: int =5,
+                    how_many: int = 1, output_type: str = 'words',
+                    password_length: int = 20):
     """
     Generate a password or passphrase with either random characters,
     words, or numbers. Optionally, choose number of dice rolls
@@ -256,4 +256,4 @@ def _validate_count(value):
 
 # Main call to command line function
 if __name__ == '__main__':
-    generate_password()
+    generate_secret()

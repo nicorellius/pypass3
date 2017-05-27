@@ -4,7 +4,7 @@
 
     <form action="{{ url_for('generate_secret') }}" method="post" class="add-entry">
 
-        <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
 
         <div class="radio-group">
             <p class="short-p">Secret Type<p>
@@ -76,8 +76,6 @@
     </form>
 
     <hr class="top-mar-1em">
-
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdtrZxr8aEw_GMnra9pEdFmgZ61-3uS68_Uaxj054_ofOflbw/viewform?embedded=true" width="400" height="300" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
 
     <div class="field-group">
         <label>Playground<br>
