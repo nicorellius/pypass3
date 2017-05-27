@@ -189,7 +189,7 @@ def generate_secret():
             return redirect(url_for('home'))
 
         except Exception as e:
-            print(e)
+            print("Exception: {0}".format(e))
 
 
 @app.route('/settings')
