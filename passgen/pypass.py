@@ -12,7 +12,7 @@ Copyright (c) 2017 Nick Vincent-Maloney <nicorellius@gmail.com>
 """
 import logging
 
-from collections import namedtuple
+# from collections import namedtuple
 
 from flask import (Flask, request, session, redirect,
                    url_for, abort, render_template, flash)
@@ -26,10 +26,14 @@ from csrf import csrf
 from generate import generate_secret
 
 app = Flask(__name__)
-app.config.from_object(__name__)
 
 # Protect with CSRF
 csrf(app)
+
+app.config.from_object(__name__)
+app.config.from_envvar('PYPASS_SETTINGS', silent=True)
+
+app.debug = config.DEBUG
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
@@ -38,10 +42,6 @@ app.config.update(dict(
     PASSWORD='default',
     DEBUG_TB_INTERCEPT_REDIRECTS=False,
 ))
-
-app.config.from_envvar('PYPASS_SETTINGS', silent=True)
-
-app.debug = config.DEBUG
 
 if app.debug is True:
     from flask_debugtoolbar import DebugToolbarExtension
@@ -65,7 +65,7 @@ logging.basicConfig(
     level=logging.DEBUG
 )
 
-persist_results = None
+# persist_results = None
 
 
 @app.route('/')
@@ -76,9 +76,9 @@ def home():
 
 
 @app.route('/generate', methods=['POST'])
-def generate_secret():
+def generate():
 
-    global persist_results
+    # global persist_results
 
     if not session.get('logged_in'):
         abort(401)
@@ -97,16 +97,16 @@ def generate_secret():
         length = request.form.get('length', 20)
         num = 1
 
-        submit = request.form['submit']
+        # submit = request.form['submit']
 
-        logging.info('[{0}] Button pressed: {1}'.format(
-            utils.get_timestamp(), submit))
+        # logging.info('[{0}] Button pressed: {1}'.format(
+        #     utils.get_timestamp(), submit))
 
-        Results = namedtuple('Results', 'rolls, dice, num, output, length,')
-        persist_results = Results(rolls, dice, num, output_type, length)
-
-        logging.info('[{0}] Form data: {1}'.format(
-            utils.get_timestamp(), persist_results))
+        # Results = namedtuple('Results', 'rolls, dice, num, output, length,')
+        # persist_results = Results(rolls, dice, num, output_type, length)
+        #
+        # logging.info('[{0}] Form data: {1}'.format(
+        #     utils.get_timestamp(), persist_results))
 
         # collection = mongo.db.form_data_collection
         # r = {'form_set_data': persist_results}
@@ -115,36 +115,36 @@ def generate_secret():
         # logging.info('[{0}] Collection ID: {1}'.format(
         #     utils.get_timestamp(), r_id))
 
-        if request.form['submit'] == 'Run Again':
-
-            try:
-                secret = generate_secret(
-                    number_rolls=int(persist_results.rolls),
-                    number_dice=int(persist_results.dice),
-                    how_many=persist_results.num,
-                    output_type=str(persist_results.output),
-                    password_length=persist_results.length
-                )
-
-                # flash(utils.crypto_hash(secret))
-
-                collection = mongo.db.secret_collection
-                s = {'secret': secret}
-                s_id = collection.insert_one(s).inserted_id
-
-                logging.info('[{0}] Collection ID: {1}'.format(
-                    utils.get_timestamp(), s_id))
-
-                flash(secret)
-
-                _log_output_params(output_type, dice, rolls, length, num)
-
-                return redirect(url_for('home'))
-
-            except Exception as e:
-                print(e)
-        else:
-            pass
+        # if request.form['submit'] == 'Run Again':
+        #
+        #     try:
+        #         secret = generate_secret(
+        #             number_rolls=int(persist_results.rolls),
+        #             number_dice=int(persist_results.dice),
+        #             how_many=persist_results.num,
+        #             output_type=str(persist_results.output),
+        #             secret_length=persist_results.length
+        #         )
+        #
+        #         # flash(utils.crypto_hash(secret))
+        #
+        #         collection = mongo.db.secret_collection
+        #         s = {'secret': secret}
+        #         s_id = collection.insert_one(s).inserted_id
+        #
+        #         logging.info('[{0}] Collection ID: {1}'.format(
+        #             utils.get_timestamp(), s_id))
+        #
+        #         flash(secret)
+        #
+        #         _log_output_params(output_type, dice, rolls, length, num)
+        #
+        #         return redirect(url_for('home'))
+        #
+        #     except Exception as e:
+        #         print(e)
+        # else:
+        #     pass
 
         if not length:
             length = 20
@@ -175,7 +175,7 @@ def generate_secret():
                                      number_dice=int(dice),
                                      how_many=num,
                                      output_type=str(output_type),
-                                     password_length=length)
+                                     secret_length=length)
 
             # flash(utils.crypto_hash(
             #     secret,
