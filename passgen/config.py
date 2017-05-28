@@ -3,6 +3,7 @@ Password Generator configuration
 """
 
 import os
+import string
 # import logging
 
 DEBUG = True
@@ -24,8 +25,12 @@ WORDLIST_SHORT = 'http://bit.ly/2ogvDGr'
 
 # Note that this API key is not secure, and you should request your own!!!
 API_KEY = '59052bc4-840b-4923-96b7-90332167bc8c'
-CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
-             'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
-             '1234567890!@#$%^&*()_+=-?~'
+
+SPECIAL = '!@#$%^&*()_+=-?~'
+CHARACTERS = '{0}{1}{2}'.format(string.ascii_letters, string.digits, SPECIAL)
+
+# CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
+#              'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
+#              '1234567890!@#$%^&*()_+=-?~'
 
 ROC_API_MAX_LENGTH = 20
