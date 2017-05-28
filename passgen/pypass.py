@@ -55,7 +55,6 @@ def home():
     return render_template('generate.html')
 
 
-@app.before_request
 @app.route('/generate', methods=['POST'])
 def generate():
 

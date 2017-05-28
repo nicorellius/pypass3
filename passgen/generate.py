@@ -23,7 +23,6 @@ import config
 
 
 # Set up logging configuration
-# TODO: set up proper logging app with handler, formatter, etc...
 logging.basicConfig(
     format='%(levelname)s %(message)s',
     level=logging.DEBUG
@@ -49,9 +48,6 @@ def generate_secret(number_rolls: int = 5, number_dice: int = 5,
         number_dice: (optional) how many dice you want to roll
         password_length: (optional) length of output type
     """
-
-    # TODO: number of rolls = number of words
-    # TODO: number of dice determine which word list
 
     # chars = config.CHARACTERS
     factor = 1

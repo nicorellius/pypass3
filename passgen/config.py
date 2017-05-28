@@ -5,7 +5,7 @@ Password Generator configuration
 import os
 import string
 
-DEBUG = True
+DEBUG = False
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
