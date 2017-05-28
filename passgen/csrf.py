@@ -26,7 +26,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from uuid import uuid4
+import string
+
 from flask import abort, request, session, g
 from werkzeug.routing import NotFound
 
@@ -72,8 +73,11 @@ def csrf(app, on_csrf=None):
 
     def generate_csrf_token():
 
+        chars = string.ascii_letters + string.digits
+
         if '_csrf_token' not in session:
-            session['_csrf_token'] = generate_secret(5, 5, 1, 'mixed', 30)
+            session['_csrf_token'] = generate_secret(5, 5, 1,
+                                                     'mixed', 50, chars)
 
         return session['_csrf_token']
 
