@@ -12,12 +12,8 @@ Copyright (c) 2017 Nick Vincent-Maloney <nicorellius@gmail.com>
 """
 import logging
 
-from collections import namedtuple
-
 from flask import (Flask, request, session, redirect,
                    url_for, abort, render_template, flash)
-
-# from flask_pymongo import PyMongo
 
 import utils
 import config
@@ -26,10 +22,14 @@ from csrf import csrf
 from generate import generate_secret
 
 app = Flask(__name__)
-app.config.from_object(__name__)
 
 # Protect with CSRF
 csrf(app)
+
+app.config.from_object(__name__)
+app.config.from_envvar('PYPASS_SETTINGS', silent=True)
+
+app.debug = config.DEBUG
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
@@ -39,111 +39,36 @@ app.config.update(dict(
     DEBUG_TB_INTERCEPT_REDIRECTS=False,
 ))
 
-# mongo db setup
-# TODO: set envars for these secrets
-# TODO: figure out why these can't belong to the config.update above
-# app.config['MONGO_DBNAME'] = 'pypass'
-# app.config['MONGO_PORT'] = '12345'
-# app.config['MONGO_USERNAME'] = 'pypass'
-# app.config['MONGO_PASSWORD'] = 'gn5n_1xSb5ITqoKmG_oe'
-#
-# mongo = PyMongo(app)
-
-app.config.from_envvar('PYPASS_SETTINGS', silent=True)
-
-app.debug = False
-
 if app.debug is True:
     from flask_debugtoolbar import DebugToolbarExtension
     toolbar = DebugToolbarExtension(app)
 
-# Set up logging configuration
-# TODO: set up proper logging app with handler, formatter, etc...
 logging.basicConfig(
-    # filename='output.log',
     format='%(levelname)s %(message)s',
     level=logging.DEBUG
 )
-
-persist_results = None
 
 
 @app.route('/')
 def home():
 
-    # secrets = mongo.db.secret_collection.find_one()
-    return render_template('generate.html')  # , secrets=secrets)
+    return render_template('generate.html')
 
 
 @app.before_request
 @app.route('/generate', methods=['POST'])
-def generate_secret():
-
-    global persist_results
+def generate():
 
     if not session.get('logged_in'):
         abort(401)
 
     if request.method == 'POST':
 
-        token = session.pop('_csrf_token', None)
-
-        if not token or token != request.form.get('_csrf_token'):
-            abort(400)
-
-        # TODO: figure out why request.form.get(value, default) only works
-        # TODO: for the radio buttons... not a field for request.form['field']?
-
-        # TODO: figure out how to validate form input
         output_type = request.form.get('type', 'words')
         dice = request.form.get('dice', 5)
         rolls = request.form.get('rolls', 5)
-        # TODO: check out generate.py line 93, gives warning in console:
-        # TODO: '<=' not supported between instances of 'str' and 'int'
         length = request.form.get('length', 20)
         num = 1
-
-        submit = request.form['submit']
-
-        logging.info('[{0}] Button pressed: {1}'.format(
-            utils.get_timestamp(), submit))
-
-        Results = namedtuple('Results', 'rolls, dice, num, output, length,')
-        persist_results = Results(rolls, dice, num, output_type, length)
-
-        logging.info('[{0}] Form data: {1}'.format(
-            utils.get_timestamp(), persist_results))
-
-        # collection = mongo.db.form_data_collection
-        # r = {'form_set_data': persist_results}
-        # r_id = collection.insert_one(r).inserted_id
-
-        # logging.info('[{0}] Collection ID: {1}'.format(
-        #     utils.get_timestamp(), r_id))
-
-        if request.form['submit'] == 'Run Again':
-
-            try:
-                secret = generate_secret(
-                    number_rolls=int(persist_results.rolls),
-                    number_dice=int(persist_results.dice),
-                    how_many=persist_results.num,
-                    output_type=str(persist_results.output),
-                    password_length=persist_results.length
-                )
-
-                # flash(utils.crypto_hash(secret))
-
-                flash(secret)
-
-                _log_output_params(output_type, dice, rolls, length, num)
-
-                return redirect(url_for('home'))
-
-            except Exception as e:
-                print(e)
-        else:
-            pass
 
         if not length:
             length = 20
@@ -174,12 +99,7 @@ def generate_secret():
                                      number_dice=int(dice),
                                      how_many=num,
                                      output_type=str(output_type),
-                                     password_length=length)
-
-            # flash(utils.crypto_hash(
-            #     secret,
-            #     'K1vGZPsxgd6SEmkpD?xIG-g_8-GnIC!8)EPzk_=45chrNE%51g')
-            # )
+                                     secret_length=length)
 
             flash(secret)
 
@@ -188,7 +108,7 @@ def generate_secret():
             return redirect(url_for('home'))
 
         except Exception as e:
-            print(e)
+            print("Exception: {0}".format(e))
 
 
 @app.route('/settings')
@@ -201,11 +121,6 @@ def settings():
     return render_template('settings.html')
 
 
-# @app.route('/settings/save', methods=['POST'])
-# def save_settings():
-#     pass
-
-# @app.before_request
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 

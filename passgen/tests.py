@@ -2,15 +2,15 @@
 Write some tests!
 
 Testing this call:
-def generate_password(number_rolls: int = 5, number_dice: int =5,
+def generate_secret(number_rolls: int = 5, number_dice: int =5,
                       how_many: int = 1, output_type: str = 'words',
-                      password_length: int = 20)
+                      secret_length: int = 20)
 
 """
 
 import pytest
 
-from generate import generate_password
+from generate import generate_secret
 from generate import (
     _validate_count, _roll_dice, _concatenate_remainder,
     _prepare_chunks, _chunks
@@ -23,6 +23,8 @@ from utils import get_roc
 # All tests use these...
 roc = get_roc(config.API_KEY)
 chars = config.CHARACTERS
+
+# TODO: Modify tests to work without click
 
 
 # ========== simple add function for sanity check ==========
@@ -53,67 +55,67 @@ def test__concatenate_remainder_thirty_chars():
     assert len(tmp_pw) == 30
 
 
-def test__generate_password_mixed_default():
+def test__generate_secret_mixed_default():
 
-    result = generate_password(output_type='mixed')
+    result = generate_secret(output_type='mixed')
 
     assert result is not None
     assert len(result) == 20
 
 
-def test__generate_password_numbers_default():
+def test__generate_secret_numbers_default():
 
-    result = generate_password(output_type='numbers')
+    result = generate_secret(output_type='numbers')
 
     assert result is not None
     assert len(result) == 20
     assert result.isdigit()
 
 
-def test__generate_password_default():
+def test__generate_secret_default():
 
-    result = generate_password()
+    result = generate_secret()
 
     assert result is not None
     assert len(result.split()) == 5
     assert result.replace(' ', '').isalpha()
 
 
-def test__generate_password_short_list_four_words():
+def test__generate_secret_short_list_four_words():
 
-    result = generate_password(number_rolls=4, number_dice=4,
-                               how_many=1, output_type='words',
-                               password_length=20)
+    result = generate_secret(number_rolls=4, number_dice=4,
+                             how_many=1, output_type='words',
+                             secret_length=20)
 
     assert result is not None
     assert len(result.split()) == 4
 
 
-def test__generate_password_long_list_five_words():
+def test__generate_secret_long_list_five_words():
 
-    result = generate_password(number_rolls=5, number_dice=5,
-                               how_many=1, output_type='words',
-                               password_length=20)
-
-    assert result is not None
-    assert len(result.split()) == 5
-
-
-def test__generate_password_short_list_five_words():
-
-    result = generate_password(number_dice=4, number_rolls=5,
-                               how_many=1, output_type='words',
-                               password_length=20)
+    result = generate_secret(number_rolls=5, number_dice=5,
+                             how_many=1, output_type='words',
+                             secret_length=20)
 
     assert result is not None
     assert len(result.split()) == 5
 
 
-def test__generate_password_long_list_four_words():
+def test__generate_secret_short_list_five_words():
 
-    result = generate_password(number_dice=5, number_rolls=4,
-                               how_many=1, output_type='words',
-                               password_length=20)
+    result = generate_secret(number_dice=4, number_rolls=5,
+                             how_many=1, output_type='words',
+                             secret_length=20)
+
+    assert result is not None
+    assert len(result.split()) == 5
+
+
+def test__generate_secret_long_list_four_words():
+
+    result = generate_secret(number_dice=5, number_rolls=4,
+                             how_many=1, output_type='words',
+                             secret_length=20)
 
     assert result is not None
     assert len(result.split()) == 4

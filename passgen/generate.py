@@ -25,15 +25,14 @@ import config
 # Set up logging configuration
 # TODO: set up proper logging app with handler, formatter, etc...
 logging.basicConfig(
-    # filename='output.log',
     format='%(levelname)s %(message)s',
     level=logging.DEBUG
 )
 
 
-def generate_secret(number_rolls: int = 5, number_dice: int =5,
+def generate_secret(number_rolls: int = 5, number_dice: int = 5,
                     how_many: int = 1, output_type: str = 'words',
-                    password_length: int = 20):
+                    secret_length: int = 20, chars: str = config.CHARACTERS):
     """
     Generate a password or passphrase with either random characters,
     words, or numbers. Optionally, choose number of dice rolls
@@ -54,7 +53,7 @@ def generate_secret(number_rolls: int = 5, number_dice: int =5,
     # TODO: number of rolls = number of words
     # TODO: number of dice determine which word list
 
-    chars = config.CHARACTERS
+    # chars = config.CHARACTERS
     factor = 1
     api_max_length = config.ROC_API_MAX_LENGTH
     result = []
@@ -72,7 +71,7 @@ def generate_secret(number_rolls: int = 5, number_dice: int =5,
                 '[{0}] Using long word list...'.format(utils.get_timestamp()))
 
         chunked_list = _prepare_chunks(number_rolls, number_dice)
-        result, password_length = _match_numbers_words(word_list, chunked_list)
+        result, secret_length = _match_numbers_words(word_list, chunked_list)
 
     elif output_type == 'numbers':
         chars = '1234567890'
@@ -90,11 +89,11 @@ def generate_secret(number_rolls: int = 5, number_dice: int =5,
 
     if output_type != 'words':
 
-        if password_length <= 20:
+        if secret_length <= 20:
             result = ''.join(roc.generate_strings(factor * how_many,
-                                                  password_length, chars))
-        elif password_length > 20:
-            result = _concatenate_remainder(roc, chars, password_length,
+                                                  secret_length, chars))
+        elif secret_length > 20:
+            result = _concatenate_remainder(roc, chars, secret_length,
                                             how_many, api_max_length)
     else:
         result = result
@@ -122,11 +121,6 @@ def _match_numbers_words(wd_list, ch_list):
     passphrase = ''
 
     try:
-        # TODO: Refactor to accept local word lists
-        # with open(word_list, 'r') as words:
-        #     lines = words.readlines()
-        #     for line in lines:
-
         for line in request.urlopen(wd_list):
             # Take word list and break apart into list
             l = line.decode()
