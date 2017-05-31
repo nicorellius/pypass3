@@ -80,7 +80,7 @@ body {
     padding: 0.5em;
     border: 1px solid #aacbe2;
     border-radius: 3px;
-    font-family: 'Courier 10 Pitch', sans-serif;
+    font-family: 'Courier 10 Pitch', 'Courier New', monospace;
     white-space: pre-wrap;       /* Since CSS 2.1 */
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
     white-space: -o-pre-wrap;    /* Opera 7 */
