@@ -65,6 +65,8 @@ logging.basicConfig(
     level=logging.DEBUG
 )
 
+logger = logging.getLogger(__name__)
+
 # persist_results = None
 
 
@@ -241,7 +243,7 @@ def logout():
 
 def _log_output_params(output_type, dice, rolls, length, num):
 
-    return logging.info(
+    return logger.info(
         '[{0}] Parameters:\n'
         '        output type: {1} {2}\n'
         '     number of dice: {3}     {4}\n'
