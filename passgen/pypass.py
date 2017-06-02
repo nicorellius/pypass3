@@ -12,8 +12,6 @@ Copyright (c) 2017 Nick Vincent-Maloney <nicorellius@gmail.com>
 """
 import logging
 
-# from collections import namedtuple
-
 from flask import (Flask, request, session, redirect,
                    url_for, abort, render_template, flash)
 
@@ -25,10 +23,8 @@ import config
 from csrf import csrf
 from generate import generate_secret
 
+# Configure Flask application
 app = Flask(__name__)
-
-# Protect with CSRF
-csrf(app)
 
 app.config.from_object(__name__)
 app.config.from_envvar('PYPASS_SETTINGS', silent=True)
@@ -47,7 +43,10 @@ if app.debug is True:
     from flask_debugtoolbar import DebugToolbarExtension
     toolbar = DebugToolbarExtension(app)
 
-# mongo db setup
+# Protect with CSRF
+csrf(app)
+
+# MongoDB and PyMongo setup
 # TODO: set envars for these secrets
 # TODO: figure out why these can't belong to the config.update above
 # app.config['MONGO_DBNAME'] = 'pypass'
@@ -57,7 +56,7 @@ if app.debug is True:
 #
 # mongo = PyMongo(app)
 
-# Set up logging configuration
+# Set up logging configuration and get logger
 # TODO: set up proper logging app with handler, formatter, etc...
 logging.basicConfig(
     # filename='output.log',
@@ -68,7 +67,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-@app.route('/')
+# Start views for main application
+@app.route('/', methods=['GET'])
 def home():
 
     # secrets = mongo.db.secret_collection.find_one()
@@ -179,14 +179,14 @@ def generate():
             print("Exception: {0}".format(e))
 
 
-@app.route('/settings')
-def settings():
-
-    if request.method == 'POST':
-
-        return redirect(url_for('home'))
-
-    return render_template('settings.html')
+# @app.route('/settings')
+# def settings():
+#
+#     if request.method == 'POST':
+#
+#         return redirect(url_for('home'))
+#
+#     return render_template('settings.html')
 
 
 # @app.route('/settings/save', methods=['POST'])
@@ -202,10 +202,10 @@ def login():
     if request.method == 'POST':
 
         if request.form['username'] != app.config['USERNAME']:
-            error = 'Invalid username'
+            error = ' Invalid username or password'
 
         elif request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid password'
+            error = ' Invalid username or password'
 
         else:
 
@@ -217,7 +217,7 @@ def login():
     return render_template('login.html', error=error)
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['GET'])
 def logout():
 
     session.pop('logged_in', None)
