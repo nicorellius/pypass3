@@ -67,8 +67,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# persist_results = None
-
 
 @app.route('/')
 def home():
@@ -80,22 +78,15 @@ def home():
 @app.route('/generate', methods=['POST'])
 def generate():
 
-    # global persist_results
-
     if not session.get('logged_in'):
         abort(401)
 
     if request.method == 'POST':
 
-        # TODO: figure out why request.form.get(value, default) only works
-        # TODO: for the radio buttons... not a field for request.form['field']?
-
-        # TODO: figure out how to validate form input
+        # TODO: add validation for form input (javascript, as well?)
         output_type = request.form.get('type', 'words')
         dice = request.form.get('dice', 5)
         rolls = request.form.get('rolls', 5)
-        # TODO: check out generate.py line 93, gives warning in console:
-        # TODO: '<=' not supported between instances of 'str' and 'int'
         length = request.form.get('length', 20)
         num = 1
 
@@ -103,12 +94,6 @@ def generate():
 
         # logging.info('[{0}] Button pressed: {1}'.format(
         #     utils.get_timestamp(), submit))
-
-        # Results = namedtuple('Results', 'rolls, dice, num, output, length,')
-        # persist_results = Results(rolls, dice, num, output_type, length)
-        #
-        # logging.info('[{0}] Form data: {1}'.format(
-        #     utils.get_timestamp(), persist_results))
 
         # collection = mongo.db.form_data_collection
         # r = {'form_set_data': persist_results}
