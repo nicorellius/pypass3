@@ -30,58 +30,29 @@
 
     <div class="metanav">
     {% if not session.logged_in %}
-        <a href="{{ url_for('login') }}">log in</a>
+        <a href="{{ url_for('login') }}"><strong>log in</strong></a>
     {% else %}
-        <a href="{{ url_for('logout') }}">log out</a>
-        <span style="float: left; font-weight: bold;">Results</span>
-    {% endif %}
-    </div>
-    {% for message in get_flashed_messages() %}
-    {% if message == 'You were logged in' %}
-    <div class="flash">
-        {{ message }}
-    </div>
-    {% elif message == 'You were logged out' %}
-    <div class="flash">
-        {{ message }}
-    </div>
-    {% endif %}
-    {% endfor %}
-
-    {% if session.logged_in %}
-        {% for message in get_flashed_messages() %}
-            {% if message != 'You were logged in' %}
-            <div class="flashy">
-                <pre id="p1">{{ message }}</pre>
-                <button id="p2" class="btn btn-sm btn-custom-success">Copy</button>
-            </div>
+        <span class="float-left">
+            Logged in as
+            {% if current_user.is_anonymous %}
+            <strong>guest</strong>
+            {%else %}
+            <strong>{{ current_user }}</strong>
             {% endif %}
-        {% endfor %}
-    {% endif%}
+        </span>
+        <a href="{{ url_for('logout') }}"><strong>log out</strong></a>
+        <!--<span style="float: left; font-weight: bold;">Results</span>-->
+    {% endif %}
+    </div>
 
-    <!--{% if not session.logged_in %}-->
-        <!--<div class="metanav">-->
-            <!--<a href="{{ url_for('login') }}">log in</a>-->
-        <!--</div>-->
-        <!--{% for message in get_flashed_messages() %}-->
-        <!--<div class="flashy">{{ message }}</div>-->
-        <!--{% endfor %}-->
-    <!--{% else %}-->
-        <!--<div class="metanav">-->
-            <!--<span style="float: left; font-weight: bold;">Results</span>-->
-            <!--<a href="{{ url_for('logout') }}">log out</a>-->
-        <!--</div>-->
-        <!--{% for message in get_flashed_messages() %}-->
-        <!--<div class="flash">-->
-            <!--<pre id="p1">{{ message }}</pre>-->
-            <!--{% if session.logged_in %}-->
-            <!--{% if message != 'You were logged in' %}-->
-            <!--<button id="p2" class="btn btn-sm btn-success">Copy</button>-->
-            <!--{% endif %}-->
-            <!--{% endif%}-->
-        <!--</div>-->
-        <!--{% endfor %}-->
-    <!--{% endif %}-->
+    {% with notifications = get_flashed_messages(category_filter=['notifications']) %}
+        {% for msg in notifications %}
+        <div class="flash">
+            {{ msg }}
+        </div>
+        {% endfor %}
+    {% endwith %}
+
     <section class="instructions top-mar-1em">
         <p>
             Make robust secrets with random characters, words, or numbers, using
@@ -113,7 +84,23 @@
                 <span class="label label-default">Read less...</span>
             </a>
         </p>
+
+        {% if session.logged_in %}
+            {% with secrets = get_flashed_messages(category_filter=['secrets']) %}
+                {% if secrets %}
+                    {% for msg in secrets %}
+                    <span class="sm-font bold">Your secret is:</span>
+                    <div class="flashy">
+                        <pre id="p1">{{ msg }}</pre>
+                        <button id="p2" class="btn btn-sm btn-custom-success">Copy</button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+
     </section>
+
     {% block body %}{% endblock %}
 
     <div id="spinner" class="spinner" style="display: none;">

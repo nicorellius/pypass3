@@ -10,15 +10,45 @@
 
         <div class="login-box">
             <p>
+                <a class="btn btn-default btn-block top-mar-1em"
+                   href="{{ url_for('oauth_authorize', provider='github') }}">
+                    <img class="pull-left" src="{{ url_for('static', filename='images/github.png') }}">
+                    Log in with GitHub
+                </a>
+            </p>
+            <p>
+                <a class="btn btn-default btn-block top-mar-1em"
+                   href="{{ url_for('oauth_authorize', provider='facebook') }}">
+                    <img class="pull-left" src="{{ url_for('static', filename='images/facebook.png') }}">
+                    Log in with Facebook
+                </a>
+            </p>
+            <p>
+                <a class="btn btn-default btn-block top-mar-1em"
+                   href="{{ url_for('oauth_authorize', provider='twitter') }}">
+                    <img class="pull-left" src="{{ url_for('static', filename='images/twitter.png') }}">
+                    Log in with Twitter
+                </a>
+            </p>
+            <p>
+                <a class="btn btn-default btn-block top-mar-1em"
+                   href="{{ url_for('oauth_authorize', provider='google') }}">
+                    <img class="pull-left" src="{{ url_for('static', filename='images/google.png') }}">
+                    Log in with Google
+                </a>
+            </p>
+
+            <p class="text-center">OR</p>
+            <p>
                 <label for="username">
-                    Username<br>
-                    <input type="text" name="username" id="username">
+                    Username <span class="sm-font unbold">(guests use "guest")</span><br>
+                    <input type="text" name="username" id="username" placeholder="admin">
                 </label>
             </p>
             <p>
                 <label for="password">
-                    Password<br>
-                    <input type="password" name="password" id="password">
+                    Password <span class="sm-font unbold">(guests use "password")</span><br>
+                    <input type="password" name="password" id="password" placeholder="default">
                 </label>
             </p>
             <p>

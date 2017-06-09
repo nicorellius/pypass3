@@ -6,6 +6,9 @@ h2 { font-size: 1.2em; }
 .entries li h2 { margin-left: -1em; }
 .add-entry { font-weight: bold; }
 .login-box input { float: right; }
+.sm-font { font-size: 0.8em; }
+.bold { font-weight: bold; }
+.unbold { font-weight: normal; }
 
 .top-mar-1em { margin-top: 1em; }
 .top-mar-2em { margin-top: 2em; }
@@ -89,9 +92,9 @@ body {
 }
 
 .flash {
-    background: #cee5F5;
+    background: #d0f4d4;
     padding: 0.5em;
-    border: 1px solid #aacbe2;
+    border: 1px solid #98ce9e;
     border-radius: 3px;
     /*font-family: "Courier 10 Pitch", sans-serif;*/
     /*white-space: pre-wrap;       !* Since CSS 2.1 *!*/
