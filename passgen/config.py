@@ -4,7 +4,7 @@ Password Generator configuration
 
 import os
 import string
-# import logging
+import logging
 
 DEBUG = True
 
@@ -34,3 +34,18 @@ CHARACTERS = '{0}{1}{2}'.format(string.ascii_letters, string.digits, SPECIAL)
 #              '1234567890!@#$%^&*()_+=-?~'
 
 ROC_API_MAX_LENGTH = 20
+
+# Set up logging configuration and get logger
+# TODO: set up proper logging app with handler, formatter, etc...
+logging.basicConfig(
+    # filename='output.log',
+    format='%(levelname)s %(message)s',
+    level=logging.DEBUG
+)
+
+# Example usage for this application:
+#   logger.info('[{0}] Log message, {1}, goes here'.format(
+#       utils.get_timestamp(), name2)
+#   )
+
+logger = logging.getLogger(__name__)
