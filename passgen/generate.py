@@ -13,24 +13,11 @@ Copyright (c) 2017 Nick Vincent-Maloney <nicorellius@gmail.com>
 
 """
 
-import logging
-
 from urllib import request
 from urllib.error import HTTPError
 
 import utils
 import config
-
-
-# Set up logging configuration
-# TODO: set up proper logging app with handler, formatter, etc...
-logging.basicConfig(
-    # filename='output.log',
-    format='%(levelname)s %(message)s',
-    level=logging.DEBUG
-)
-
-logger = logging.getLogger(__name__)
 
 
 def generate_secret(number_rolls: int = 5, number_dice: int = 5,
@@ -66,11 +53,11 @@ def generate_secret(number_rolls: int = 5, number_dice: int = 5,
 
         if number_dice == 4:
             word_list = config.WORDLIST_SHORT
-            logger.info(
+            config.logger.info(
                 '[{0}] Using short word list...'.format(utils.get_timestamp()))
         else:
             word_list = config.WORDLIST_LONG
-            logger.info(
+            config.logger.info(
                 '[{0}] Using long word list...'.format(utils.get_timestamp()))
 
         chunked_list = _prepare_chunks(number_rolls, number_dice)
@@ -79,13 +66,13 @@ def generate_secret(number_rolls: int = 5, number_dice: int = 5,
     elif output_type == 'numbers':
         chars = '1234567890'
 
-        logger.info(
+        config.logger.info(
             '[{0}] Output type `numbers` selected...'.format(
                 utils.get_timestamp())
         )
 
     else:
-        logger.info(
+        config.logger.info(
             '[{0}] Output type `mixed` selected...'.format(
                 utils.get_timestamp())
         )
@@ -101,7 +88,7 @@ def generate_secret(number_rolls: int = 5, number_dice: int = 5,
     else:
         result = result
 
-    logger.info('[{0}] Your password is: {1}'.format(
+    config.logger.info('[{0}] Your password is: {1}'.format(
         utils.get_timestamp(), result)
     )
 
@@ -136,7 +123,7 @@ def _match_numbers_words(wd_list, ch_list):
             super_list.append(d)
 
     except HTTPError as e:
-        logger.error('[{0}] {1}'.format(utils.get_timestamp(), e))
+        config.logger.error('[{0}] {1}'.format(utils.get_timestamp(), e))
 
     # Convert list into str and int components
     for k in set(k for d in super_list for k in d):
@@ -159,7 +146,7 @@ def _prepare_chunks(number_rolls, number_dice):
     chunks = list(_chunks(number_list, number_dice))
 
     if config.DEBUG is True:
-        logger.info('[{0}] Chunked list:\n  {1}'.format(
+        config.logger.info('[{0}] Chunked list:\n  {1}'.format(
             utils.get_timestamp(), chunks)
         )
 
@@ -187,7 +174,7 @@ def _concatenate_remainder(roc, chars, pw_len,
     remainder = pw_len % 20  # old version was factor = int(pw_len) % 20
 
     if config.DEBUG:
-        logger.info(
+        config.logger.info(
             '[{0}] factor: {1}, remainder: {2}'.format(
                 utils.get_timestamp(), factor, remainder)
         )
