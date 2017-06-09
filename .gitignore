@@ -95,3 +95,6 @@ ENV/
 # PyTest
 .cache
 .cache/*
+
+# Database
+pypass.db
