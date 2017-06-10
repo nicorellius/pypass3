@@ -67,11 +67,6 @@ class GitHubSignIn(OAuthSignIn):
 
     def callback(self):
 
-        # def decode_json(payload):
-        #     config.logger.info('[{0}] Decoded payload: {1}'.format(
-        #         utils.get_timestamp(), payload.decode()))
-        #     return json.loads(payload.decode())
-
         if 'code' not in request.args:
             return None, None, None
 
@@ -81,7 +76,6 @@ class GitHubSignIn(OAuthSignIn):
                 'grant_type': 'authorization_code',
                 'redirect_uri': self.get_callback_url()
             },
-            # decoder=decode_json
         )
 
         config.logger.info('[{0}] OAuth session: {1}'.format(
@@ -185,9 +179,6 @@ class TwitterSignIn(OAuthSignIn):
 
     def callback(self):
 
-        def decode_json(payload):
-            return json.loads(payload.decode('utf-8'))
-
         request_token = session.pop('request_token')
 
         if 'oauth_verifier' not in request.args:
@@ -198,8 +189,7 @@ class TwitterSignIn(OAuthSignIn):
             request_token[1],
             data={
                 'oauth_verifier': request.args['oauth_verifier']
-            },
-            decoder=decode_json
+            }
         )
 
         me = oauth_session.get('account/verify_credentials.json').json()
@@ -207,3 +197,62 @@ class TwitterSignIn(OAuthSignIn):
         username = me.get('screen_name')
 
         return social_id, username, None  # Twitter does not provide email
+
+
+class GoogleSignIn(OAuthSignIn):
+
+    def __init__(self):
+
+        super(GoogleSignIn, self).__init__('google')
+
+        self.service = OAuth2Service(
+            name='google',
+            client_id=self.consumer_id,
+            client_secret=self.consumer_secret,
+            authorize_url='https://accounts.google.com/o/oauth2/auth',
+            access_token_url='https://accounts.google.com/o/oauth2/token',
+            base_url='https://www.googleapis.com/plus/v1/people/'
+        )
+
+    def authorize(self):
+
+        return redirect(self.service.get_authorize_url(
+            scope='email',
+            response_type='code',
+            redirect_uri=self.get_callback_url())
+        )
+
+    def callback(self):
+
+        def decode_json(payload):
+            return json.loads(payload.decode('utf-8'))
+
+        if 'code' not in request.args:
+            return None, None, None
+
+        oauth_session = self.service.get_auth_session(
+            data={
+                'code': request.args['code'],
+                'grant_type': 'authorization_code',
+                'redirect_uri': self.get_callback_url()
+            },
+            decoder=decode_json
+        )
+
+        try:
+            me = oauth_session.get('me').json()
+            me_email = None
+
+            config.logger.info('[{0}] Me in provider callback: {1}'.format(
+                utils.get_timestamp(), me))
+
+            for e in me['emails']:
+                if e['type'] == 'account':
+                    me_email = e['value']
+
+            return me.get('id'), me.get('displayName'), me_email
+
+        except KeyError as ke:
+            print("Seems something is wrong with Google's response")
+            print('KeyError: {0} not found in response'.format(ke))
+
