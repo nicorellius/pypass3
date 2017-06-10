@@ -20,7 +20,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin,
                          login_user, logout_user, current_user)
 
-# from flask_pymongo import PyMongo
+from flask_pymongo import PyMongo
 from oauth import OAuthSignIn
 
 import utils
@@ -29,86 +29,37 @@ import config
 from csrf import csrf
 from generate import generate_secret
 
+
+# TODO: encrypt everything going into database
+# TODO: Build out logging application of module
+
 # Configure Flask application
 app = Flask(__name__)
-
+app.config.update(config.appconf)
 app.config.from_object(__name__)
 app.config.from_envvar('PYPASS_SETTINGS', silent=True)
-
-app.debug = config.DEBUG
-
-# Load default config and override config from an environment variable
-app.config.update(dict(
-    SECRET_KEY='xN~@en@B%l0Kli6TBVUoxOP(tIJ_JnC@=9(a8N8cg27J)*nQ!c',
-    USERNAME='guest',
-    PASSWORD='password',
-    DEBUG_TB_INTERCEPT_REDIRECTS=False,
-    SQLALCHEMY_DATABASE_URI='sqlite:///pypass.db',
-    SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    OAUTH_CREDENTIALS={
-        'github': {
-            'id': 'd3be9a39c8db65911ce0',
-            'secret': 'cba32867fc777bd1291425e3aeedb222f51ef7c0'
-        },
-        'facebook': {
-            'id': '137292646828195',
-            'secret': 'e9ba084118895fc5dc82ed69eb6a3330'
-        },
-        'twitter': {
-            'id': ' g3wINYT3Y3jI5iuxCFEJ5meG2',
-            'secret': 'MH7c6kHwi7ICvyE0PyJl0Ezf7xJG7z15StmznMBG3TTcdE943p'
-        }
-    }
-))
-
-if app.debug is True:
-    from flask_debugtoolbar import DebugToolbarExtension
-    toolbar = DebugToolbarExtension(app)
 
 # Protect with CSRF
 csrf(app)
 
-# MongoDB and PyMongo setup
-# TODO: set envars for these secrets
-# TODO: figure out why these can't belong to the config.update above
-# app.config['MONGO_DBNAME'] = 'pypass'
-# app.config['MONGO_PORT'] = '12345'
-# app.config['MONGO_USERNAME'] = 'pypass'
-# app.config['MONGO_PASSWORD'] = 'gn5n_1xSb5ITqoKmG_oe'
-#
-# mongo = PyMongo(app)
+# MongoDB
+mongo = PyMongo(app)
 
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 lm = LoginManager(app)
 lm.login_view = 'home'
 
-
-class User(UserMixin, db.Model):
-
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), nullable=False, unique=True)
-    social_id = db.Column(db.String(64), nullable=False, unique=True)
-    nickname = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(64), nullable=True)
-
-    def __init__(self, username, social_id, nickname, email=None):
-        self.username = username
-        self.social_id = social_id
-        self.email = email
-        self.nickname = nickname
-
-    def __repr__(self):
-        return '{0}'.format(self.username)
+if app.debug is True:
+    from flask_debugtoolbar import DebugToolbarExtension
+    toolbar = DebugToolbarExtension(app)
 
 
 # Start views for main application
 @app.route('/', methods=['GET'])
 def home():
 
-    # secrets = mongo.db.secret_collection.find_one()
-    return render_template('generate.html')  # , secrets=secrets)
+    secrets = mongo.db.secret_collection.find_one()
+    return render_template('generate.html', secrets=secrets)
 
 
 @app.route('/generate', methods=['POST'])
@@ -134,7 +85,7 @@ def generate():
         # collection = mongo.db.form_data_collection
         # r = {'form_set_data': persist_results}
         # r_id = collection.insert_one(r).inserted_id
-
+        #
         # logging.info('[{0}] Collection ID: {1}'.format(
         #     utils.get_timestamp(), r_id))
 
@@ -181,7 +132,7 @@ def generate():
         elif output_type == 'uuid':
 
             if length > 32:
-                flash("UUID can be a maximum of 32 characters")
+                flash("UUID can be a maximum of 32 characters", 'notifications')
 
             elif length == 32:
                 secret = utils.gen_uid()
@@ -244,7 +195,8 @@ def login():
         config_pass = app.config['PASSWORD']
 
         if username != config_user or password != config_pass:
-            error = ' Invalid username or password'
+            error = 'Invalid username or password'
+            flash(error, 'errors')
 
         else:
             # try:
@@ -326,41 +278,51 @@ def oauth_callback(provider):
         return redirect(url_for('home'))
 
     oauth = OAuthSignIn.get_provider(provider)
-    social_id, username, email = oauth.callback()
 
-    config.logger.info('[{0}] OAuth: {1}'.format(
-        utils.get_timestamp(), oauth))
+    try:
+        social_id, username, email = oauth.callback()
 
-    if social_id is None:
-        flash('Authentication failed.')
+        config.logger.info('[{0}] OAuth: {1}'.format(
+            utils.get_timestamp(), oauth))
+
+        if social_id is None:
+            flash('Authentication failed.')
+
+            return redirect(url_for('home'))
+
+        user = User.query.filter_by(social_id=social_id).first()
+        config.logger.info('[{0}] Me in oauth_callback: {1}'.format(
+            utils.get_timestamp(), user))
+
+        if not user:
+
+            try:
+                user = User(username=username, social_id=social_id,
+                            nickname='temp', email=email)
+                db.session.add(user)
+                db.session.commit()
+
+            except IntegrityError:
+                login_user(user, True)
+                session['logged_in'] = True
+                flash("Only one '{0}' can access this system.\n"
+                      "Logged in as 'guest' instead.".format(username),
+                      'notifications')
+                return redirect(url_for('home'))
+
+        login_user(user, True)
+        session['logged_in'] = True
+        flash('You were logged in', 'notifications')
 
         return redirect(url_for('home'))
 
-    user = User.query.filter_by(social_id=social_id).first()
-    config.logger.info('[{0}] Me in oauth_callback: {1}'.format(
-        utils.get_timestamp(), user))
+    except TypeError as ke:
+        print("Seems something is wrong with Google's response")
+        print('TypeError: {0} not found in response'.format(ke))
 
-    if not user:
+    flash('Something went wrong with the authentication', 'errors')
 
-        try:
-            user = User(username=username, social_id=social_id,
-                        nickname='temp', email=email)
-            db.session.add(user)
-            db.session.commit()
-
-        except IntegrityError:
-            login_user(user, True)
-            session['logged_in'] = True
-            flash("Only one '{0}' can access this system.\n"
-                  "Logged in as 'guest' instead.".format(username),
-                  'notifications')
-            return redirect(url_for('home'))
-
-    login_user(user, True)
-    session['logged_in'] = True
-    flash('You were logged in', 'notifications')
-
-    return redirect(url_for('home'))
+    return render_template('login.html')
 
 
 if __name__ == '__main__':
