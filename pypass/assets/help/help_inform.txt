@@ -1,0 +1,3 @@
+Random long strings are hardest to guess! Use a
+password manager like keypass.info so you
+don't have to remember them.

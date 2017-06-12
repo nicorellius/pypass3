@@ -1,0 +1,146 @@
+<!doctype html>
+
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Flask Web Application to Generate Passwords">
+<meta name="keywords" content="PyPass, Python, security, passwords, dice, rolls, EFF, random.org">
+<meta name="author" content="nicorellius (CISTech Consulting)">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<link href="https://fonts.googleapis.com/css?family=Archivo Narrow|Fjalla One|Anton|Oswald|Amiri|BioRhyme|Crimson+Text|Domine|Droid+Serif|Open+Sans+Condensed:300|Roboto|Sanchez|Tinos|Volkhov" rel="stylesheet">
+
+<link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+
+<title>PyPass - Password Generator & Manager</title>
+</head>
+
+<div class="page">
+
+    <h1 id="main-title">
+        <a id="logo" href="/"><img src="{{ url_for('static', filename='images/lock_icon.png') }}"></a>
+        <span style="color: darkred; font-family: Fjalla One, sans-serif;">PyPass3</span>
+        <span class="xs-sub">&nbsp; Password Generator & Manager</span>
+        <a href="#settings">
+            <i id="settings-gear" class="glyphicon glyphicon-cog" aria-hidden="true"></i>
+        </a>
+    </h1>
+
+    <div class="metanav">
+    {% if not session.logged_in %}
+        <a href="{{ url_for('login') }}"><strong>log in</strong></a>
+    {% else %}
+        <span class="float-left">
+            Logged in as
+            {% if current_user.is_anonymous %}
+            <strong>guest</strong>
+            {% else %}
+            <strong>{{ current_user }}</strong>
+            {% endif %}
+        </span>
+        <a href="{{ url_for('logout') }}"><strong>log out</strong></a>
+    {% endif %}
+    </div>
+
+    {% if session.logged_in %}
+    <ul class="sm-font nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#generate" aria-controls="generate" role="tab" data-toggle="tab">Generate</a>
+        </li>
+        <li role="presentation">
+            <a href="#manage" aria-controls="manage" role="tab" data-toggle="tab">Manage</a>
+        </li>
+        <li role="presentation">
+            <a href="#settings" aria-controls="setting" role="tab" data-toggle="tab">Settings</a>
+        </li>
+    </ul>
+    {% endif %}
+
+    {% with notifications = get_flashed_messages(category_filter=['notifications']) %}
+        {% for msg in notifications %}
+        <div class="alert flash" role="alert">
+            {{ msg }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span class="sm-font" aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    {% endwith %}
+
+    {% with errors = get_flashed_messages(category_filter=['errors']) %}
+        {% if errors %}
+            {% for msg in errors %}
+            <div class="alert flash error" role="alert">
+                <strong>Error: </strong>{{ msg }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span class="sm-font" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <section class="instructions top-mar-1em">
+        <p>
+            Make robust secrets with random characters, words, or numbers, using
+            <a href="https://www.random.org" target="_blank">RANDOM.ORG</a>
+            true randomness (from atmospheric noise). Choose number of dice and how
+            many times to roll to create passphrases from
+            <a href="https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases" target="_blank">
+                EFF word lists</a>.
+            <a id="rm-link">
+                <span class="label label-default">Read more...</span>
+            </a>
+        </p>
+
+        <p id="rm1" class="hide-div">
+            Number of rolls determines how many words in your passphrase.
+            Number of dice determine which EFF word list to use: long
+            or short. Defaults to 5 dice and 5 rolls and long word list
+            for words type.
+        <p>
+        <p id="rm2" class="hide-div">
+            Mixed and numbers type don't use dice, but instead use length.
+            Defaults to 20. Longer passwords are better. Mixed type uses a
+            character list containing alphanumeric with capitals, and these
+            additional special characters: ( ! @ # $ % ^ & * _ + = - ? ~ )
+        </p>
+        <p id="rm3" class="hide-div">
+            Finally, if you want UUIDs or Faux IDs, you can choose this option.
+            Defaults to UUID (32 alphanumeric characters seperated by hypens with
+            the following pattern: 8-4-4-4-12).
+            <a id="rl-link">
+                <span class="label label-default">Read less...</span>
+            </a>
+        </p>
+
+        {% if session.logged_in %}
+            {% with secrets = get_flashed_messages(category_filter=['secrets']) %}
+                {% if secrets %}
+                    {% for msg in secrets %}
+                    <span class="sm-font bold">Your secret is:</span>
+                    <div class="flashy">
+                        <pre id="p1">{{ msg }}</pre>
+                        <button id="p2" class="btn btn-sm btn-custom-success">
+                            Copy
+                        </button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+
+    </section>
+
+    {% block body %}{% endblock %}
+
+    <div id="spinner" class="spinner" style="display: none;">
+        <img id="img-spinner" src="{{ url_for('static', filename='images/spinner.gif') }}" alt="Generating...">
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
