@@ -1,0 +1,366 @@
+"""
+PyPass3
+
+Dice Roll Optional, Mostly-Random Word, Number, and Mixed Character 
+Password Generator
+
+Mozilla Public License Version 2
+https://www.mozilla.org/en-US/MPL/2.0/
+
+Copyright (c) 2017 Nick Vincent-Maloney <nicorellius@gmail.com>
+
+"""
+
+from sqlalchemy.exc import IntegrityError
+
+from flask import (Flask, request, session, redirect,
+                   url_for, abort, render_template, flash)
+
+# from flask_sqlalchemy import SQLAlchemy
+from flask_login import (LoginManager, UserMixin,
+                         login_user, logout_user, current_user,
+                         login_required)
+
+from flask_pymongo import PyMongo
+
+from . import utils
+from . import config
+
+from .models import User
+from .oauth import OAuthSignIn
+from .csrf import csrf
+from .generate import generate_secret
+
+# Main list of items to do...
+# TODO: Encrypt everything going into database
+# TODO: Build out logging application of module
+# TODO: Implement forms with proper validation for login and genberate
+
+# Configure Flask application
+app = Flask(__name__)
+
+app.config.update(config.appconf)
+app.config.from_object(__name__)
+app.config.from_envvar('PYPASS_SETTINGS', silent=True)
+
+# Protect with CSRF
+csrf(app)
+
+# MongoDB
+mongo = PyMongo(app)
+
+# db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'home'
+
+if app.debug is True:
+    from flask_debugtoolbar import DebugToolbarExtension
+    toolbar = DebugToolbarExtension(app)
+
+
+# Start views for main application
+@app.route('/', methods=['GET'])
+def home():
+
+    # secrets = mongo.db.secret_collection.find_one()
+    return render_template('generate.html')  # , secrets=secrets)
+
+
+@app.route('/generate', methods=['POST'])
+@login_required
+def generate():
+
+    if not session.get('logged_in'):
+        abort(401)
+
+    if request.method == 'POST':
+
+        # TODO: add validation for form input (javascript, as well?)
+        output_type = request.form.get('type', 'words')
+        dice = request.form.get('dice', 5)
+        rolls = request.form.get('rolls', 5)
+        length = request.form.get('length', 20)
+        num = 1
+
+        # submit = request.form['submit']
+
+        # logging.info('[{0}] Button pressed: {1}'.format(
+        #     utils.get_timestamp(), submit))
+
+        # collection = mongo.db.form_data_collection
+        # r = {'form_set_data': persist_results}
+        # r_id = collection.insert_one(r).inserted_id
+        #
+        # logging.info('[{0}] Collection ID: {1}'.format(
+        #     utils.get_timestamp(), r_id))
+
+        # if request.form['submit'] == 'Run Again':
+        #
+        #     try:
+        #         secret = generate_secret(
+        #             number_rolls=int(persist_results.rolls),
+        #             number_dice=int(persist_results.dice),
+        #             how_many=persist_results.num,
+        #             output_type=str(persist_results.output),
+        #             secret_length=persist_results.length
+        #         )
+        #
+        #         # flash(utils.crypto_hash(secret))
+        #
+        #         collection = mongo.db.secret_collection
+        #         s = {'secret': secret}
+        #         s_id = collection.insert_one(s).inserted_id
+        #
+        #         logging.info('[{0}] Collection ID: {1}'.format(
+        #             utils.get_timestamp(), s_id))
+        #
+        #         flash(secret)
+        #
+        #         _log_output_params(output_type, dice, rolls, length, num)
+        #
+        #         return redirect(url_for('home'))
+        #
+        #     except Exception as e:
+        #         print(e)
+        # else:
+        #     pass
+
+        if not length:
+            length = 20
+
+        else:
+            length = int(length)
+
+        if output_type is 'mixed' or output_type is 'numbers':
+            dice, rolls = 5, 5
+
+        elif output_type == 'uuid':
+
+            if length > 32:
+                flash("UUID can be a maximum of 32 characters", 'notifications')
+
+            elif length == 32:
+                secret = utils.gen_uid()
+                flash(secret, 'secrets')
+
+            else:
+                secret = utils.gen_uid(length, True)
+                flash(secret, 'secrets')
+
+            return redirect(url_for('home'))
+
+        try:
+            secret = generate_secret(number_rolls=int(rolls),
+                                     number_dice=int(dice),
+                                     how_many=num,
+                                     output_type=str(output_type),
+                                     secret_length=length)
+
+            # flash(utils.crypto_hash(
+            #     secret,
+            #     'K1vGZPsxgd6SEmkpD?xIG-g_8-GnIC!8)EPzk_=45chrNE%51g')
+            # )
+
+            flash(secret, 'secrets')
+
+            _log_output_params(output_type, dice, rolls, length, num)
+
+            return redirect(url_for('home'))
+
+        except Exception as e:
+            print(("Exception: {0}".format(e)))
+
+
+# @app.route('/settings')
+# def settings():
+#
+#     if request.method == 'POST':
+#
+#         return redirect(url_for('home'))
+#
+#     return render_template('settings.html')
+
+
+# @app.route('/settings/save', methods=['POST'])
+# def save_settings():
+#     pass
+
+# @app.before_request
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+
+    error = None
+
+    if request.method == 'POST':
+
+        username = request.form['username']
+        password = request.form['password']
+
+        config_user = app.config['USERNAME']
+        config_pass = app.config['PASSWORD']
+
+        if username != config_user or password != config_pass:
+            error = 'Invalid username or password'
+            flash(error, 'errors')
+
+        user = mongo.db.users_collection.find_one({'username': username})
+        user_obj = User(user['_id'])
+        login_user(user_obj)
+
+        session['logged_in'] = True
+        flash('You were logged in', 'notifications')
+
+        return redirect(url_for('home'))
+
+    # TODO: with flashing, this dict is not needed...
+    data = {'error': error}
+
+    return render_template('login.html', **data)
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('logged_in', None)
+    logout_user()
+    flash('You were logged out', 'notifications')
+
+    return redirect(url_for('login'))
+
+
+def _log_output_params(output_type, dice, rolls, length, num):
+
+    return config.logger.info(
+        '[{0}] Parameters:\n'
+        '        output type: {1} {2}\n'
+        '     number of dice: {3}     {4}\n'
+        '    number of rolls: {5}     {6}\n'
+        '      secret length: {7}    {8}\n'
+        '  number of secrets: {9}     {10}'.format(
+            utils.get_timestamp(),
+            output_type, type(output_type),
+            dice, type(dice),
+            rolls, type(rolls),
+            length, type(length),
+            num, type(num))
+    )
+
+
+# @login_manager.user_loader
+# def load_user(username):
+#
+#     # return User.query.get(user_id)
+#
+#     u = mongo.db.users_collection.find_one({'username': username})
+#
+#     if not u:
+#         return None
+#
+#     return User(u['username'])
+
+
+@login_manager.user_loader
+def load_user(username):
+
+    user = mongo.db.users_collection.find_one({'username': username})
+
+    if not user:
+        return None
+
+    return User(user['username'])
+
+
+@app.route('/authorize/<provider>')
+def oauth_authorize(provider):
+
+    config.logger.info('[{0}] Before get_provider: {1}'.format(
+        utils.get_timestamp(), str(provider)))
+
+    if not current_user.is_anonymous:
+        return redirect(url_for('home'))
+
+    oauth = OAuthSignIn.get_provider(provider)
+
+    config.logger.info('[{0}] After get_provider: {1}'.format(
+        utils.get_timestamp(), str(provider)))
+
+    config.logger.info('[{0}] OAuth authorize: {1}'.format(
+        utils.get_timestamp(), oauth.authorize()))
+
+    return oauth.authorize()
+
+
+@app.route('/callback/<provider>')
+def oauth_callback(provider):
+
+    if not current_user.is_anonymous:
+        return redirect(url_for('home'))
+
+    oauth = OAuthSignIn.get_provider(provider)
+
+    try:
+        social_id, username, email = oauth.callback()
+        config.logger.info('[{0}] OAuth object: {1}'.format(
+            utils.get_timestamp(), oauth))
+
+        if social_id is None:
+            flash('Authentication failed.')
+            return redirect(url_for('home'))
+
+        try:
+            # user = User.query.filter_by(social_id=social_id).first()
+            u = mongo.db.users_collection.find_one({
+                'username': username
+            })['username']
+
+            user = load_user(u)
+
+            config.logger.info('[{0}] User name from database: {1} {2}'.format(
+                utils.get_timestamp(), user, type(user)))
+
+            if not user:
+                try:
+                    # user = User(username=username, social_id=social_id,
+                    #             nickname='temp', email=email)
+                    # db.session.add(user)
+                    # db.session.commit()
+
+                    collection = mongo.db.users_collection
+                    user = {
+                        'username': username,
+                        'social_id': social_id,
+                        'name': username,
+                        'email': email,
+                    }
+                    collection.insert_one(user)
+
+                except IntegrityError:
+
+                    login_user(user, True)
+                    session['logged_in'] = True
+                    flash("Only one '{0}' can access this system.\n"
+                          "Logged in as 'guest' instead.".format(username),
+                          'notifications')
+
+                    return redirect(url_for('home'))
+
+            try:
+                login_user(user, True)
+                session['logged_in'] = True
+                flash("You were logged in", 'notifications')
+                return redirect(url_for('home'))
+
+            except AttributeError as ae:
+                print(ae)
+                flash("Oops... Something went wrong. Try again.",
+                      'errors')
+
+        except KeyError as ke:
+            print("KeyError: {0} not found in response".format(ke))
+
+    except TypeError as te:
+        print("Oops! Something's wrong with the provider's response")
+        print("TypeError: {0}".format(te))
+        flash("Something went wrong with your authentication", 'errors')
+
+    return render_template('login.html')
+
