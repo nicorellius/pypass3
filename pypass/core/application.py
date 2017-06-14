@@ -19,8 +19,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin,
                          login_user, logout_user, current_user)
 
-from flask_pymongo import PyMongo
-
 from . import utils
 from . import config
 

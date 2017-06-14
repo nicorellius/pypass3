@@ -81,10 +81,6 @@ class GitHubSignIn(OAuthSignIn):
         config.logger.info('[{0}] OAuth session: {1}'.format(
             utils.get_timestamp(), oauth_session))
 
-        # social_id = 'github${0}'.format('social_id')
-        # username = 'username'
-        # email = 'email'
-
         # the "me" response
         me = oauth_session.get('user').json()
         username = me['login']
