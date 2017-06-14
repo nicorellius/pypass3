@@ -32,8 +32,6 @@ import secrets
 from flask import abort, request, session, g
 from werkzeug.routing import NotFound
 
-from generate import generate_secret
-
 
 _exempt_views = []
 

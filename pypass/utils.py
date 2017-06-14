@@ -13,9 +13,9 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from rdoclient import RandomOrgClient
 
-import config
+from . import config
 
-from generate import generate_secret
+from .generate import generate_secret
 
 
 # get time in format I like

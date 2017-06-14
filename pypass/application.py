@@ -10,7 +10,6 @@ https://www.mozilla.org/en-US/MPL/2.0/
 Copyright (c) 2017 Nick Vincent-Maloney <nicorellius@gmail.com>
 
 """
-import logging
 from sqlalchemy.exc import IntegrityError
 
 from flask import (Flask, request, session, redirect,
@@ -21,13 +20,13 @@ from flask_login import (LoginManager, UserMixin,
                          login_user, logout_user, current_user)
 
 from flask_pymongo import PyMongo
-from oauth import OAuthSignIn
 
-import utils
-import config
+from . import utils
+from . import config
 
-from csrf import csrf
-from generate import generate_secret
+from .oauth import OAuthSignIn
+from .csrf import csrf
+from .generate import generate_secret
 
 
 # TODO: encrypt everything going into database
@@ -42,10 +41,7 @@ app.config.from_envvar('PYPASS_SETTINGS', silent=True)
 # Protect with CSRF
 csrf(app)
 
-# MongoDB
-mongo = PyMongo(app)
-
-# db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 lm = LoginManager(app)
 lm.login_view = 'home'
 
@@ -54,12 +50,31 @@ if app.debug is True:
     toolbar = DebugToolbarExtension(app)
 
 
+class User(UserMixin, db.Model):
+
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), nullable=False, unique=True)
+    social_id = db.Column(db.String(64), nullable=False, unique=True)
+    nickname = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(64), nullable=True)
+
+    def __init__(self, username, social_id, nickname, email=None):
+        self.username = username
+        self.social_id = social_id
+        self.email = email
+        self.nickname = nickname
+
+    def __repr__(self):
+        return '{0}'.format(self.username)
+
+
 # Start views for main application
 @app.route('/', methods=['GET'])
 def home():
 
-    secrets = mongo.db.secret_collection.find_one()
-    return render_template('generate.html', secrets=secrets)
+    return render_template('generate.html')
 
 
 @app.route('/generate', methods=['POST'])
@@ -76,49 +91,6 @@ def generate():
         rolls = request.form.get('rolls', 5)
         length = request.form.get('length', 20)
         num = 1
-
-        # submit = request.form['submit']
-
-        # logging.info('[{0}] Button pressed: {1}'.format(
-        #     utils.get_timestamp(), submit))
-
-        # collection = mongo.db.form_data_collection
-        # r = {'form_set_data': persist_results}
-        # r_id = collection.insert_one(r).inserted_id
-        #
-        # logging.info('[{0}] Collection ID: {1}'.format(
-        #     utils.get_timestamp(), r_id))
-
-        # if request.form['submit'] == 'Run Again':
-        #
-        #     try:
-        #         secret = generate_secret(
-        #             number_rolls=int(persist_results.rolls),
-        #             number_dice=int(persist_results.dice),
-        #             how_many=persist_results.num,
-        #             output_type=str(persist_results.output),
-        #             secret_length=persist_results.length
-        #         )
-        #
-        #         # flash(utils.crypto_hash(secret))
-        #
-        #         collection = mongo.db.secret_collection
-        #         s = {'secret': secret}
-        #         s_id = collection.insert_one(s).inserted_id
-        #
-        #         logging.info('[{0}] Collection ID: {1}'.format(
-        #             utils.get_timestamp(), s_id))
-        #
-        #         flash(secret)
-        #
-        #         _log_output_params(output_type, dice, rolls, length, num)
-        #
-        #         return redirect(url_for('home'))
-        #
-        #     except Exception as e:
-        #         print(e)
-        # else:
-        #     pass
 
         if not length:
             length = 20
@@ -151,11 +123,6 @@ def generate():
                                      output_type=str(output_type),
                                      secret_length=length)
 
-            # flash(utils.crypto_hash(
-            #     secret,
-            #     'K1vGZPsxgd6SEmkpD?xIG-g_8-GnIC!8)EPzk_=45chrNE%51g')
-            # )
-
             flash(secret, 'secrets')
 
             _log_output_params(output_type, dice, rolls, length, num)
@@ -166,21 +133,6 @@ def generate():
             print(("Exception: {0}".format(e)))
 
 
-# @app.route('/settings')
-# def settings():
-#
-#     if request.method == 'POST':
-#
-#         return redirect(url_for('home'))
-#
-#     return render_template('settings.html')
-
-
-# @app.route('/settings/save', methods=['POST'])
-# def save_settings():
-#     pass
-
-# @app.before_request
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -199,12 +151,6 @@ def login():
             flash(error, 'errors')
 
         else:
-            # try:
-            #     default = User(username, username, username)
-            #     db.session.add(default)
-            #     db.session.commit()
-            # except Exception as e:
-            #     print(e)
 
             session['logged_in'] = True
             flash('You were logged in', 'notifications')
@@ -324,7 +270,5 @@ def oauth_callback(provider):
 
     return render_template('login.html')
 
+db.create_all()
 
-if __name__ == '__main__':
-    db.create_all()
-    app.run()
