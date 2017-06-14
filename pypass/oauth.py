@@ -87,6 +87,10 @@ class GitHubSignIn(OAuthSignIn):
 
         # the "me" response
         me = oauth_session.get('user').json()
+
+        config.logger.info('[{0}] Me in provider callback: {1}'.format(
+            utils.get_timestamp(), me))
+
         username = me['login']
         social_id = 'github${0}'.format(me['id'])
         email = me['url']
@@ -136,6 +140,7 @@ class FacebookSignIn(OAuthSignIn):
         )
 
         me = oauth_session.get('me?fields=id,email').json()
+
         config.logger.info('[{0}] Me in provider callback: {1}'.format(
             utils.get_timestamp(), me))
 
@@ -193,6 +198,10 @@ class TwitterSignIn(OAuthSignIn):
         )
 
         me = oauth_session.get('account/verify_credentials.json').json()
+
+        config.logger.info('[{0}] Me in provider callback: {1}'.format(
+            utils.get_timestamp(), me))
+
         social_id = 'twitter${0}'.format(str(me.get('id')))
         username = me.get('screen_name')
 

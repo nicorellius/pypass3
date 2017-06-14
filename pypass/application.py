@@ -16,12 +16,10 @@ from sqlalchemy.exc import IntegrityError
 from flask import (Flask, request, session, redirect,
                    url_for, abort, render_template, flash)
 
-# from flask_sqlalchemy import SQLAlchemy
-from flask_login import (LoginManager, UserMixin,
-                         login_user, logout_user, current_user,
-                         login_required)
+from flask_login import LoginManager, login_user, logout_user, current_user
 
 from flask_pymongo import PyMongo
+from pymongo import errors as pymongo_errors
 
 from . import utils
 from . import config
@@ -234,23 +232,19 @@ def oauth_callback(provider):
             return redirect(url_for('home'))
 
     except TypeError as te:
-        print("Oops! Something's wrong with the provider's response")
-        print("TypeError: {0}".format(te))
+        print("TypeError in assigning callback: {0}".format(te))
         flash("Something went wrong with your authentication", 'errors')
 
     try:
-        # user = User.query.filter_by(social_id=social_id).first()
-        # uname = mongo.db.users_collection.find_one({
-        #     'username': username
-        # })['username']
         user_db = mongo.db.users_collection.find_one({
             'username': username})
 
-        print(user_db['username'])  # prints username from db user
-
+        # print(user_db['username'])  # prints username from db user
         # user = User(str(user_db['username']))  # create user object
 
-        user = User(username=username, social_id=social_id, email=email)
+        user = User(user_db['username'],
+                    user_db['social_id'],
+                    user_db['email'])
 
         config.logger.info('[{0}] User from database: {1} {2}'.format(
             utils.get_timestamp(), user, type(user)))
@@ -259,15 +253,10 @@ def oauth_callback(provider):
         print("KeyError: {0} not found in response".format(ke))
 
     except TypeError as te:
-        print("TypeError: {0}".format(te))
+        print("TypeError in finding/creating user: {0}".format(te))
 
     if user is 'guest':
         try:
-            # user = User(username=username, social_id=social_id,
-            #             nickname='temp', email=email)
-            # db.session.add(user)
-            # db.session.commit()
-
             collection = mongo.db.users_collection
             user = {
                 'username': username,
