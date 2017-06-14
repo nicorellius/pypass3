@@ -41,7 +41,7 @@ app = Flask(__name__)
 
 app.config.update(config.appconf)
 app.config.from_object(__name__)
-app.config.from_envvar('PYPASS_SETTINGS', silent=True)
+# app.config.from_envvar('PYPASS_SETTINGS', silent=True)
 
 # Protect with CSRF
 csrf(app)
@@ -67,7 +67,7 @@ def home():
 
 
 @app.route('/generate', methods=['POST'])
-@login_required
+# @login_required
 def generate():
 
     if not session.get('logged_in'):
@@ -81,49 +81,6 @@ def generate():
         rolls = request.form.get('rolls', 5)
         length = request.form.get('length', 20)
         num = 1
-
-        # submit = request.form['submit']
-
-        # logging.info('[{0}] Button pressed: {1}'.format(
-        #     utils.get_timestamp(), submit))
-
-        # collection = mongo.db.form_data_collection
-        # r = {'form_set_data': persist_results}
-        # r_id = collection.insert_one(r).inserted_id
-        #
-        # logging.info('[{0}] Collection ID: {1}'.format(
-        #     utils.get_timestamp(), r_id))
-
-        # if request.form['submit'] == 'Run Again':
-        #
-        #     try:
-        #         secret = generate_secret(
-        #             number_rolls=int(persist_results.rolls),
-        #             number_dice=int(persist_results.dice),
-        #             how_many=persist_results.num,
-        #             output_type=str(persist_results.output),
-        #             secret_length=persist_results.length
-        #         )
-        #
-        #         # flash(utils.crypto_hash(secret))
-        #
-        #         collection = mongo.db.secret_collection
-        #         s = {'secret': secret}
-        #         s_id = collection.insert_one(s).inserted_id
-        #
-        #         logging.info('[{0}] Collection ID: {1}'.format(
-        #             utils.get_timestamp(), s_id))
-        #
-        #         flash(secret)
-        #
-        #         _log_output_params(output_type, dice, rolls, length, num)
-        #
-        #         return redirect(url_for('home'))
-        #
-        #     except Exception as e:
-        #         print(e)
-        # else:
-        #     pass
 
         if not length:
             length = 20
@@ -156,36 +113,16 @@ def generate():
                                      output_type=str(output_type),
                                      secret_length=length)
 
-            # flash(utils.crypto_hash(
-            #     secret,
-            #     'K1vGZPsxgd6SEmkpD?xIG-g_8-GnIC!8)EPzk_=45chrNE%51g')
-            # )
-
             flash(secret, 'secrets')
 
             _log_output_params(output_type, dice, rolls, length, num)
 
             return redirect(url_for('home'))
 
-        except Exception as e:
-            print(("Exception: {0}".format(e)))
+        except ValueError as ve:
+            print("ValueError: {0}".format(ve))
 
 
-# @app.route('/settings')
-# def settings():
-#
-#     if request.method == 'POST':
-#
-#         return redirect(url_for('home'))
-#
-#     return render_template('settings.html')
-
-
-# @app.route('/settings/save', methods=['POST'])
-# def save_settings():
-#     pass
-
-# @app.before_request
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -203,10 +140,6 @@ def login():
             error = 'Invalid username or password'
             flash(error, 'errors')
 
-        user = mongo.db.users_collection.find_one({'username': username})
-        user_obj = User(user['_id'])
-        login_user(user_obj)
-
         session['logged_in'] = True
         flash('You were logged in', 'notifications')
 
@@ -220,6 +153,7 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
+
     session.pop('logged_in', None)
     logout_user()
     flash('You were logged out', 'notifications')
@@ -245,28 +179,16 @@ def _log_output_params(output_type, dice, rolls, length, num):
     )
 
 
-# @login_manager.user_loader
-# def load_user(username):
-#
-#     # return User.query.get(user_id)
-#
-#     u = mongo.db.users_collection.find_one({'username': username})
-#
-#     if not u:
-#         return None
-#
-#     return User(u['username'])
-
-
 @login_manager.user_loader
 def load_user(username):
 
-    user = mongo.db.users_collection.find_one({'username': username})
+    user = mongo.db.users_collection.find_one({
+        'username': username})
 
     if not user:
         return None
 
-    return User(user['username'])
+    return User(user['username'], user['social_id'], user['email'])
 
 
 @app.route('/authorize/<provider>')
@@ -292,6 +214,11 @@ def oauth_authorize(provider):
 @app.route('/callback/<provider>')
 def oauth_callback(provider):
 
+    user = ''
+    username = ''
+    social_id = ''
+    email = ''
+
     if not current_user.is_anonymous:
         return redirect(url_for('home'))
 
@@ -306,61 +233,69 @@ def oauth_callback(provider):
             flash('Authentication failed.')
             return redirect(url_for('home'))
 
-        try:
-            # user = User.query.filter_by(social_id=social_id).first()
-            u = mongo.db.users_collection.find_one({
-                'username': username
-            })['username']
-
-            user = load_user(u)
-
-            config.logger.info('[{0}] User name from database: {1} {2}'.format(
-                utils.get_timestamp(), user, type(user)))
-
-            if not user:
-                try:
-                    # user = User(username=username, social_id=social_id,
-                    #             nickname='temp', email=email)
-                    # db.session.add(user)
-                    # db.session.commit()
-
-                    collection = mongo.db.users_collection
-                    user = {
-                        'username': username,
-                        'social_id': social_id,
-                        'name': username,
-                        'email': email,
-                    }
-                    collection.insert_one(user)
-
-                except IntegrityError:
-
-                    login_user(user, True)
-                    session['logged_in'] = True
-                    flash("Only one '{0}' can access this system.\n"
-                          "Logged in as 'guest' instead.".format(username),
-                          'notifications')
-
-                    return redirect(url_for('home'))
-
-            try:
-                login_user(user, True)
-                session['logged_in'] = True
-                flash("You were logged in", 'notifications')
-                return redirect(url_for('home'))
-
-            except AttributeError as ae:
-                print(ae)
-                flash("Oops... Something went wrong. Try again.",
-                      'errors')
-
-        except KeyError as ke:
-            print("KeyError: {0} not found in response".format(ke))
-
     except TypeError as te:
         print("Oops! Something's wrong with the provider's response")
         print("TypeError: {0}".format(te))
         flash("Something went wrong with your authentication", 'errors')
+
+    try:
+        # user = User.query.filter_by(social_id=social_id).first()
+        # uname = mongo.db.users_collection.find_one({
+        #     'username': username
+        # })['username']
+        user_db = mongo.db.users_collection.find_one({
+            'username': username})
+
+        print(user_db['username'])  # prints username from db user
+
+        # user = User(str(user_db['username']))  # create user object
+
+        user = User(username=username, social_id=social_id, email=email)
+
+        config.logger.info('[{0}] User from database: {1} {2}'.format(
+            utils.get_timestamp(), user, type(user)))
+
+    except KeyError as ke:
+        print("KeyError: {0} not found in response".format(ke))
+
+    except TypeError as te:
+        print("TypeError: {0}".format(te))
+
+    if user is 'guest':
+        try:
+            # user = User(username=username, social_id=social_id,
+            #             nickname='temp', email=email)
+            # db.session.add(user)
+            # db.session.commit()
+
+            collection = mongo.db.users_collection
+            user = {
+                'username': username,
+                'social_id': social_id,
+                'email': email,
+            }
+            collection.insert_one(user)
+
+        except IntegrityError:
+
+            login_user(user, True)
+            session['logged_in'] = True
+            flash("Only one '{0}' can access this system.\n"
+                  "Logged in as 'guest' instead.".format(username),
+                  'notifications')
+
+            return redirect(url_for('home'))
+
+    try:
+        login_user(user, True)
+        session['logged_in'] = True
+        flash("You were logged in", 'notifications')
+        return redirect(url_for('home'))
+
+    except AttributeError as ae:
+        print("AttributeError: {0}".format(ae))
+        flash("Oops... Something went wrong. Try again.",
+              'errors')
 
     return render_template('login.html')
 
