@@ -145,7 +145,7 @@ def _prepare_chunks(number_rolls, number_dice):
     number_dice = _validate_count(number_dice)
     chunks = list(_chunks(number_list, number_dice))
 
-    if config.DEBUG is True:
+    if config.appconf['DEBUG'] is True:
         config.logger.info('[{0}] Chunked list:\n  {1}'.format(
             utils.get_timestamp(), chunks)
         )
@@ -173,7 +173,7 @@ def _concatenate_remainder(roc, chars, pw_len,
     factor = pw_len // 20  # old version was factor = int(pw_len) // 20
     remainder = pw_len % 20  # old version was factor = int(pw_len) % 20
 
-    if config.DEBUG:
+    if config.appconf['DEBUG'] is True:
         config.logger.info(
             '[{0}] factor: {1}, remainder: {2}'.format(
                 utils.get_timestamp(), factor, remainder)
