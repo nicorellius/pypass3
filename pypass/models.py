@@ -26,8 +26,10 @@ from flask_login import UserMixin
 
 class User(UserMixin):
 
-    def __init__(self, username):
+    def __init__(self, username, social_id, email):
         self.username = username
+        self.social_id = social_id
+        self.email = email
 
     def get_id(self):
         return self.username
@@ -40,6 +42,9 @@ class User(UserMixin):
 
     def is_anonymous(self):
         return False
+
+    def __repr__(self):
+        return '{0}'.format(self.username)
 
     # @staticmethod
     # def validate_login(password_hash, password):
