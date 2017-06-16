@@ -15,9 +15,10 @@ from sqlalchemy.exc import IntegrityError
 from flask import (Flask, request, session, redirect,
                    url_for, abort, render_template, flash)
 
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin,
                          login_user, logout_user, current_user)
+
+from flask_pymongo import PyMongo
 
 from . import utils
 from . import config
@@ -39,30 +40,24 @@ app.config.from_envvar('PYPASS_SETTINGS', silent=True)
 # Protect with CSRF
 csrf(app)
 
-db = SQLAlchemy(app)
-lm = LoginManager(app)
-lm.login_view = 'home'
+# MongoDB
+mongo = PyMongo(app)
+
+# Login Manager
+login_manager = LoginManager(app)
+login_manager.login_view = 'home'
 
 if app.debug is True:
     from flask_debugtoolbar import DebugToolbarExtension
     toolbar = DebugToolbarExtension(app)
 
 
-class User(UserMixin, db.Model):
+class User(UserMixin):
 
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), nullable=False, unique=True)
-    social_id = db.Column(db.String(64), nullable=False, unique=True)
-    nickname = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(64), nullable=True)
-
-    def __init__(self, username, social_id, nickname, email=None):
+    def __init__(self, username, social_id, email=None):
         self.username = username
         self.social_id = social_id
         self.email = email
-        self.nickname = nickname
 
     def __repr__(self):
         return '{0}'.format(self.username)
@@ -190,9 +185,21 @@ def _log_output_params(output_type, dice, rolls, length, num):
     )
 
 
-@lm.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
+# @lm.user_loader
+# def load_user(user_id):
+#     return User.query.get(user_id)
+
+
+@login_manager.user_loader
+def load_user(username):
+
+    user = mongo.db.users_collection.find_one({
+        'username': username})
+
+    if not user:
+        return None
+
+    return User(user['username'], user['social_id'], user['email'])
 
 
 @app.route('/authorize/<provider>')
@@ -234,17 +241,15 @@ def oauth_callback(provider):
 
             return redirect(url_for('home'))
 
-        user = User.query.filter_by(social_id=social_id).first()
+        user = mongo.db.users_collection.find_one({
+            'username': username})
         config.logger.info('[{0}] Me in oauth_callback: {1}'.format(
             utils.get_timestamp(), user))
 
         if not user:
 
             try:
-                user = User(username=username, social_id=social_id,
-                            nickname='temp', email=email)
-                db.session.add(user)
-                db.session.commit()
+                user = User(username=username, social_id=social_id, email=email)
 
             except IntegrityError:
                 login_user(user, True)
@@ -267,6 +272,3 @@ def oauth_callback(provider):
     flash('Something went wrong with the authentication', 'errors')
 
     return render_template('login.html')
-
-db.create_all()
-

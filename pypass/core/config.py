@@ -13,9 +13,6 @@ appconf = dict(
     USERNAME='guest',
     PASSWORD='password',
     DEBUG_TB_INTERCEPT_REDIRECTS=False,
-    # SQLAlchemy configuration for local SQLite3 database
-    SQLALCHEMY_DATABASE_URI='sqlite:///pypass.db',
-    SQLALCHEMY_TRACK_MODIFICATIONS=False,
     # Oauth configuration
     OAUTH_CREDENTIALS={
         'github': {
@@ -36,10 +33,10 @@ appconf = dict(
         }
     },
     # Mongo configuration
-    # MONGO_DBNAME='pypass',
-    # MONGO_PORT='12345',
-    # MONGO_USERNAME='pypass',
-    # MONGO_PASSWORD='gn5n_1xSb5ITqoKmG_oe',
+    MONGO_DBNAME='pypass',
+    MONGO_PORT='12345',
+    MONGO_USERNAME='pypass',
+    MONGO_PASSWORD='gn5n_1xSb5ITqoKmG_oe',
 )
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
