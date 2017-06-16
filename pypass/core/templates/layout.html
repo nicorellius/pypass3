@@ -145,3 +145,11 @@
 <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
 <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+
+<script>
+if (window.location.hash == '#_=_') {
+history.replaceState
+    ? history.replaceState(null, null, window.location.href.split('#')[0])
+    : window.location.hash = '';
+}
+</script>
