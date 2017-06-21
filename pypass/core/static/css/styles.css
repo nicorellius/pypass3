@@ -12,7 +12,7 @@ h2 { font-size: 1.2em; }
 .entries li h2 { margin-left: -1em; }
 .add-entry { font-weight: bold; }
 .login-box input { float: right; }
-.sm-font { font-size: 0.8em; }
+.sm-font { font-size: 9pt; }
 .bold { font-weight: bold; }
 .unbold { font-weight: normal; }
 
@@ -89,10 +89,14 @@ body {
 
 .metanav {
     text-align: right;
-    font-size: 0.8em;
+    font-size: 9pt;
     padding: 10px;
     margin-bottom: 1em;
     background: #fafafa;
+}
+
+.btn-close {
+    font-size: 12pt;
 }
 
 .flashy pre {
@@ -113,7 +117,7 @@ body {
     padding: 0.5em;
     border: 1px solid #98ce9e;
     border-radius: 3px;
-    font-size: 85%;
+    font-size: 9pt;
     color: #5e5e5e;
     margin-top: 10px;
 }
