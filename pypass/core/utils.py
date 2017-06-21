@@ -31,6 +31,24 @@ def get_timestamp():
     return dt.strftime("%Y-%m-%d %X")
 
 
+def log_output_params(output_type, dice, rolls, length, num):
+
+    return config.logger.info(
+        '[{0}] Parameters:\n'
+        '        output type: {1} {2}\n'
+        '     number of dice: {3}     {4}\n'
+        '    number of rolls: {5}     {6}\n'
+        '      secret length: {7}    {8}\n'
+        '  number of secrets: {9}     {10}'.format(
+            get_timestamp(),
+            output_type, type(output_type),
+            dice, type(dice),
+            rolls, type(rolls),
+            length, type(length),
+            num, type(num))
+    )
+
+
 def gen_uid(length=10, rid=False):
     """
     Function to generate random id of varying length for application
