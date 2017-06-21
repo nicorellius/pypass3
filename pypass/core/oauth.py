@@ -78,17 +78,16 @@ class GitHubSignIn(OAuthSignIn):
             },
         )
 
-        config.logger.info('[{0}] OAuth session: {1}'.format(
-            utils.get_timestamp(), oauth_session))
-
         # the "me" response
         me = oauth_session.get('user').json()
+
+        config.logger.info('[{0}] Me in provider callback: {1}'.format(
+            utils.get_timestamp(), me))
+
         username = me['login']
         social_id = 'github${0}'.format(me['id'])
-        email = me['url']
-        # nickname = me['name'].split()[0].lower()
 
-        return social_id, username, email  # nickname,
+        return social_id, username, None
 
 
 class FacebookSignIn(OAuthSignIn):
@@ -137,7 +136,6 @@ class FacebookSignIn(OAuthSignIn):
 
         # Facebook does not provide a username, so the user email is used
         # to extract one out
-
         social_id = 'facebook${0}'.format(me['id'])
         username = me.get('email').split('@')[0]
         email = me.get('email')
@@ -189,6 +187,10 @@ class TwitterSignIn(OAuthSignIn):
         )
 
         me = oauth_session.get('account/verify_credentials.json').json()
+
+        config.logger.info('[{0}] Me in provider callback: {1}'.format(
+            utils.get_timestamp(), me))
+
         social_id = 'twitter${0}'.format(str(me.get('id')))
         username = me.get('screen_name')
 
@@ -235,20 +237,20 @@ class GoogleSignIn(OAuthSignIn):
             decoder=decode_json
         )
 
-        try:
-            me = oauth_session.get('me').json()
-            me_email = None
+        me = oauth_session.get('me').json()
+        me_email = None
 
-            config.logger.info('[{0}] Me in provider callback: {1}'.format(
-                utils.get_timestamp(), me))
+        config.logger.info('[{0}] Me in provider callback: {1}'.format(
+            utils.get_timestamp(), me))
 
-            for e in me['emails']:
-                if e['type'] == 'account':
-                    me_email = e['value']
+        social_id = 'google${0}'.format(str(me.get('id')))
 
-            return me.get('id'), me.get('displayName'), me_email
+        # Google does not provide a username, so the user email is used
+        # to extract one out
+        for e in me['emails']:
+            if e['type'] == 'account':
+                me_email = e['value']
 
-        except KeyError as ke:
-            print("Seems something is wrong with Google's response")
-            print('KeyError: {0} not found in response'.format(ke))
+        username = me_email.split('@')[0]
 
+        return social_id, username, me_email
