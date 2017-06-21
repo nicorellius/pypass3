@@ -98,3 +98,6 @@ ENV/
 
 # Database
 pypass.db
+
+# Notes
+*_notes.txt
