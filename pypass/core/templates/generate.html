@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+
 {% block body %}
     {% if session.logged_in %}
 
@@ -22,7 +23,7 @@
             </label>
             <label id="uuid-type" class="radio-inline">
                 <input type="radio" name="type" id="uuid" value="uuid">
-                <small><strong>*And a bonus option: UUID</strong></small>
+                <span class="sm-font bold"><strong>*And a bonus option: UUID</strong></span>
             </label>
         </div>
 
@@ -77,11 +78,9 @@
 
     <hr class="top-mar-1em">
 
-{#    <div class="field-group">#}
-        <label>Playground<br>
-            <textarea id="playground-area" name="secret"></textarea>
-        </label>
-{#    </div>#}
+    <label>Playground<br>
+        <textarea id="playground-area" name="secret"></textarea>
+    </label>
 
     {% endif %}
 {% endblock %}
