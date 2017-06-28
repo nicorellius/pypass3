@@ -21,6 +21,27 @@ def home():
     return render_template('generate.html')
 
 
+# Start views for main application
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+
+    return render_template('settings.html')
+
+
+# Start views for main application
+@app.route('/manage', methods=['GET', 'POST'])
+def manage():
+
+    return render_template('manage.html')
+
+
+# Start views for main application
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+
+    return render_template('profile.html')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
