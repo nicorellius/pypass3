@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
-{% block body %}
+{% block generate %}
+
     {% if session.logged_in %}
 
     <form action="{{ url_for('generate') }}" method="post" class="add-entry">
@@ -67,7 +68,7 @@
             </label>
 
             <div class="btn-container">
-                <button id="generate" class="btn btn-custom-primary btn-block"
+                <button id="generate-btn" class="btn btn-custom-primary btn-block"
                         type="submit" name="submit" value="Generate">
                     <i class="glyphicon glyphicon-refresh"></i> &nbsp; Generate
                 </button>
@@ -83,4 +84,5 @@
     </label>
 
     {% endif %}
-{% endblock %}
+
+{% endblock generate %}

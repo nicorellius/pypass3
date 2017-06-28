@@ -1,10 +1,13 @@
-{% extends "layout.html" %}
-{% block body %}
+{#{% extends "layout.html" %}#}
+
+{% block settings %}
+
     {% if session.logged_in %}
 
     <section class="instructions top-mar-1em">
         <p>
-            Adjust settings here, like wordlists, characters for mixed secrets, etc...
+            Adjust settings here, like wordlists,
+            characters for mixed secrets, etc...
         </p>
     </section>
 
@@ -41,9 +44,6 @@
 
     </form>
 
-    <div id="spinner" class="spinner" style="display: none;">
-        <img id="img-spinner" src="{{ url_for('static', filename='images/spinner.gif') }}" alt="Generating...">
-    </div>
-
     {% endif %}
-{% endblock %}
+
+{% endblock settings %}
