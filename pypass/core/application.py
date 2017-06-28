@@ -31,7 +31,9 @@ from .models import User
 # TODO: Build out logging application of module
 
 # Configure Flask application
-app = Flask(__name__)
+app = Flask(__name__,
+            template_folder=config.TEMPLATE_PATH,
+            static_folder=config.STATIC_PATH)
 app.config.update(config.appconf)
 app.config.from_object(__name__)
 app.config.from_envvar('PYPASS_SETTINGS', silent=True)
