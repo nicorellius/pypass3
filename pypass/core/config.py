@@ -39,7 +39,10 @@ appconf = dict(
     MONGO_PASSWORD='gn5n_1xSb5ITqoKmG_oe',
 )
 
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+# CORE_ROOT = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+STATIC_PATH = os.path.join(PROJECT_ROOT, 'static')
+TEMPLATE_PATH = os.path.join(PROJECT_ROOT, 'templates')
 
 # Word lists from EFF:
 #     https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
@@ -57,12 +60,11 @@ WORDLIST_SHORT = 'http://bit.ly/2ogvDGr'
 # Note that this API key is not secure, and you should request your own!!!
 API_KEY = '59052bc4-840b-4923-96b7-90332167bc8c'
 
-SPECIAL = '!@#$%^&*()_+=-?~'
-CHARACTERS = '{0}{1}{2}'.format(string.ascii_letters, string.digits, SPECIAL)
+_SPECIAL = '!@#$%^&*()_+=-?~'
+CHARACTERS = '{ascii}{digits}{special}'.format(
+    ascii=string.ascii_letters, digits=string.digits, special=_SPECIAL)
 
 ROC_API_MAX_LENGTH = 20
-
-
 
 # Set up logging configuration and get logger
 # TODO: set up proper logging app with handler, formatter, etc...
