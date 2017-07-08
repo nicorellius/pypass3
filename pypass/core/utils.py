@@ -71,9 +71,11 @@ def gen_uid(length=10, rid=False):
     return ''.join(random.sample(list(tmp_uid), length))
 
 
-def hash_password(password, salt_length=16, iterations=10000, encoding='utf-8'):
+def hash_password(password, salt_length=16,
+                  iterations=10000, encoding='utf-8'):
     """
     Function to securely hash password with variable salt and iterations
+
     :param password: input secret
     :param salt_length: length of salt
     :param iterations: number of times to cycle this algorithm
@@ -97,45 +99,40 @@ def hash_password(password, salt_length=16, iterations=10000, encoding='utf-8'):
     # return hashed_password
 
 
-def crypto_hash(secret, default_salt='tTn0ICSQ8d!pVGULB+L='):
+def crypto_hash(secret, salt='tTn0ICSQ8d!pVGULB+L='):
 
     """
-    Hashing to store secret with password
-    :param password: 
+    Hash routine for securing secrets
+
     :param secret: 
-    :param default_salt: 
-    :return: 
+    :param salt:
+    :return: encoded hashed secret
     """
 
     backend = default_backend()
 
-    if not default_salt:
+    if not salt or len(salt) < 10:
         # os.urandom(16)  # this calls OS random generator
-        default_salt = generate_secret(output_type='mixed',
-                                       secret_length=16)
+        salt = generate_secret(output_type='mixed', secret_length=20)
 
-    salt = bytes(default_salt, 'utf-8')
+    salt = bytes(salt, 'utf-8')
 
-    now = time.clock()
+    # now = time.clock()
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
                      length=32, salt=salt, iterations=1000000,
                      backend=backend)
 
     key = kdf.derive(bytes(secret, 'utf-8'))
-    later = time.clock() - now
-    print(later)
-
-    return key.decode('utf-8')
 
     # print(key)
-    #
-    # kdf2 = PBKDF2HMAC(algorithm=hashes.SHA256(),
-    #                   length=32, salt=salt, iterations=100000,
-    #                   backend=backend)
-    #
-    # verify = kdf2.verify(bytes(secret, 'utf-8'), key)
-    #
-    # return verify
+
+    kdf2 = PBKDF2HMAC(algorithm=hashes.SHA256(),
+                      length=32, salt=salt, iterations=100000,
+                      backend=backend)
+
+    verify = kdf2.verify(bytes(secret, 'utf-8'), key)
+
+    return verify
 
 
 def get_roc(api_key=config.API_KEY):
