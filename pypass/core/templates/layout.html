@@ -44,19 +44,19 @@
     {% endif %}
     </div>
 
-    {% if session.logged_in %}
-    <ul class="sm-font nav nav-tabs" role="tablist">
-        <li role="presentation" class="active">
-            <a href="#generate" aria-controls="generate" role="tab" data-toggle="tab">Generate</a>
-        </li>
-        <li role="presentation">
-            <a href="#manage" aria-controls="manage" role="tab" data-toggle="tab">Manage</a>
-        </li>
-        <li role="presentation">
-            <a href="#settings" aria-controls="setting" role="tab" data-toggle="tab">Settings</a>
-        </li>
-    </ul>
-    {% endif %}
+{#    {% if session.logged_in %}#}
+{#    <ul class="sm-font nav nav-tabs" role="tablist">#}
+{#        <li role="presentation" class="active">#}
+{#            <a href="#generate" aria-controls="generate" role="tab" data-toggle="tab">Generate</a>#}
+{#        </li>#}
+{#        <li role="presentation">#}
+{#            <a href="#manage" aria-controls="manage" role="tab" data-toggle="tab">Manage</a>#}
+{#        </li>#}
+{#        <li role="presentation">#}
+{#            <a href="#settings" aria-controls="setting" role="tab" data-toggle="tab">Settings</a>#}
+{#        </li>#}
+{#    </ul>#}
+{#    {% endif %}#}
 
     {% with notifications = get_flashed_messages(category_filter=['notifications']) %}
         {% for msg in notifications %}
