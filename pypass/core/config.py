@@ -7,7 +7,7 @@ import string
 import logging
 
 appconf = dict(
-    DEBUG=True,
+    DEBUG=False,
     SECRET_KEY='xN~@en@B%l0Kli6TBVUoxOP(tIJ_JnC@=9(a8N8cg27J)*nQ!c',
     # Starting point for credentials
     USERNAME='guest',

@@ -59,9 +59,10 @@ https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 - Set up configuration at `/etc/uwsgi/sites/pypass.ini`
 - Download uWSGI and build with no Python, so custom plugins ca be created:
     `wget http://projects.unbit.it/downloads/uwsgi-2.0.12.tar.gz`
-- Unzip source to:
+- Unzip source and move to where it'll live:  
     `tar -xf uwsgi-<version>.tar.gz`  
-    `mv uwsgi-<version> /usr/local/lib/uwsgi-<version>`
+    `mv uwsgi-<version> /usr/local/lib/uwsgi-<version>`  
+    `cd /usr/local/lib/uwsgi-<version>`
 - Run this command: `make PROFILE=nolang`
 - Then build plugin for Python 3.3, 3.4, etc:
     `PYTHON=python3.x ./uwsgi --build-plugin "plugins/python python3x"`
