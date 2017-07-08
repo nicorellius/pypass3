@@ -2,6 +2,49 @@
 
 <h2>Manage Secrets</h2>
 
-<p>This is where the management console will live</p>
+<p>Add an entry to your secret collection. All entries are stored hashed with</p>
+
+    {% if session.logged_in %}
+
+    <form action="{{ url_for('settings') }}" method="post" class="add-entry">
+
+        <div>
+            <div class="form-group">
+                <label for="s">Account name</label>
+                <input id="edit-chars" type="text" class="form-control" name="">
+            </div>
+
+            <div class="form-group">
+                <label for="">Username</label>
+                <input id="" type="text" class="form-control" name="">
+            </div>
+
+            <div class="form-group">
+                <label for="">Secret</label>
+                <input id="" type="password" class="form-control" name="">
+            </div>
+
+            <div class="form-group">
+                <label for="">Sign in URL</label>
+                <input id="" type="text" class="form-control" name="">
+            </div>
+
+            <div class="form-group">
+                <label for="">Notes</label>
+                <textarea id="playground-area" name="secret"></textarea>
+            </div>
+
+            <button style="width: 150px;" class="btn btn-custom-success" type="submit">
+                Save
+            </button>
+
+            <a href="/" style="float: right; width: 150px;" class="btn btn-custom-danger" type="submit" role="button">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+    {% endif %}
 
 {% endblock manage %}
