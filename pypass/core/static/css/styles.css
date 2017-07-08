@@ -1,4 +1,10 @@
-a { cursor: pointer; }
+a {
+    cursor: pointer;
+    outline: 0;
+}
+a:hover, a:active, a:after {
+    outline: 0;
+}
 a, h1, h2 { color: #377ba8; }
 h2 { font-size: 1.2em; }
 
@@ -6,6 +12,9 @@ h2 { font-size: 1.2em; }
 .entries li h2 { margin-left: -1em; }
 .add-entry { font-weight: bold; }
 .login-box input { float: right; }
+.sm-font { font-size: 0.8em; }
+.bold { font-weight: bold; }
+.unbold { font-weight: normal; }
 
 .top-mar-1em { margin-top: 1em; }
 .top-mar-2em { margin-top: 2em; }
@@ -21,10 +30,18 @@ h1 {
     margin-top: 5px;
 }
 
+.xs-sub {
+    font-size: 50%;
+    color: #2b542c;
+    font-family: Oswald, sans-serif;
+}
 
-.login-box, .login-box input {
+.login-box, .login-box label input {
     width: 250px;
-    /*height: 150px;*/
+}
+
+.social-auth-box .btn {
+    min-width: 150px;
 }
 
 hr {
@@ -45,7 +62,9 @@ body {
     /*font-family: 'Volkhov', serif;*/
     /*font-family: 'Amiri', serif;*/
     /*font-family: sans-serif;*/
+    /*font-family: Archivo Narrow, sans-serif;*/
     background: #eee;
+    font-size: 13px;
 }
 
 /*h1, h2 {*/
@@ -55,7 +74,8 @@ body {
 
 .page {
     margin: 1em auto;
-    width: 34em;
+    max-width: 460px;  /*34em;*/
+    min-width: 280px;
     /*border: 5px solid #ccc;*/
     padding: 0.8em;
     background: white;
@@ -70,7 +90,7 @@ body {
 .metanav {
     text-align: right;
     font-size: 0.8em;
-    padding: 0.3em;
+    padding: 10px;
     margin-bottom: 1em;
     background: #fafafa;
 }
@@ -89,21 +109,17 @@ body {
 }
 
 .flash {
-    background: #cee5F5;
+    background: #d0f4d4;
     padding: 0.5em;
-    border: 1px solid #aacbe2;
+    border: 1px solid #98ce9e;
     border-radius: 3px;
-    /*font-family: "Courier 10 Pitch", sans-serif;*/
-    /*white-space: pre-wrap;       !* Since CSS 2.1 *!*/
-    /*white-space: -moz-pre-wrap;  !* Mozilla, since 1999 *!*/
-    /*white-space: -pre-wrap;      !* Opera 4-6 *!*/
-    /*white-space: -o-pre-wrap;    !* Opera 7 *!*/
-    /*word-wrap: break-word;       !* Internet Explorer 5.5+ *!*/
-    /*white-space: pre-line;*/
+    font-size: 85%;
+    color: #5e5e5e;
+    margin-top: 10px;
 }
 
 #p1 {
-    width: 30em;
+    max-width: 380px;
 }
 
 #p2 {
@@ -112,14 +128,16 @@ body {
     height: 34px;
 }
 
+textarea#playground-area {
+    height: 100px;
+    width: 438px;
+}
+
 .error {
     background: #f0d6d6;
     padding: 0.5em;
-}
-
-.add-entry {
-    /*font-size: 0.9em;*/
-    /*border-bottom: 1px solid #ccc;*/
+    border: 1px solid #c99b9b;
+    border-radius: 3px;
 }
 
 .show-div {
@@ -213,6 +231,12 @@ a#rm-link:hover, a#rl-link:hover {
 #encrypt-option {
     margin-top: -30px;
 }
+
+.nav > li > a {
+    padding: 5px 10px;
+}
+
+button.close span { vertical-align: text-top; }
 
 /*e1e5e3*/
 .btn-custom-default {
@@ -371,4 +395,27 @@ a#rm-link:hover, a#rl-link:hover {
     color: #fff !important;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.49);
     -webkit-font-smoothing: antialiased;
+}
+
+@media (max-width: 500px) {
+
+    .page {margin: 1em 1em; }
+
+    #p1 {
+        margin-right: 60px;
+    }
+    
+    #uuid-type {
+        display: none;
+    }
+
+    textarea#playground-area {
+        width: 100%;
+    }
+}
+
+@media (max-width: 450px) {
+
+    .xs-sub {
+        display: none; }
 }

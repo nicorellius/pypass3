@@ -20,7 +20,7 @@
                 <input type="radio" name="type" id="numbers" value="numbers">
                 Numbers
             </label>
-            <label class="radio-inline">
+            <label id="uuid-type" class="radio-inline">
                 <input type="radio" name="type" id="uuid" value="uuid">
                 <small><strong>*And a bonus option: UUID</strong></small>
             </label>
@@ -77,11 +77,11 @@
 
     <hr class="top-mar-1em">
 
-    <div class="field-group">
+{#    <div class="field-group">#}
         <label>Playground<br>
-            <textarea name="secret" rows="5" cols="50"></textarea>
+            <textarea id="playground-area" name="secret"></textarea>
         </label>
-    </div>
+{#    </div>#}
 
     {% endif %}
 {% endblock %}

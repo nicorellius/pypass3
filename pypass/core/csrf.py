@@ -27,11 +27,10 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import string
+import secrets
 
 from flask import abort, request, session, g
 from werkzeug.routing import NotFound
-
-from generate import generate_secret
 
 
 _exempt_views = []
@@ -66,7 +65,8 @@ def csrf(app, on_csrf=None):
         if not g._csrf_exempt:
             if request.method == "POST":
                 csrf_token = session.pop('_csrf_token', None)
-                if not csrf_token or csrf_token != request.form.get('_csrf_token'):
+                if not csrf_token or csrf_token != request.form.get(
+                        '_csrf_token'):
                     if on_csrf:
                         on_csrf(*app.match_request())
                     abort(400)
@@ -76,8 +76,9 @@ def csrf(app, on_csrf=None):
         chars = string.ascii_letters + string.digits
 
         if '_csrf_token' not in session:
-            session['_csrf_token'] = generate_secret(5, 5, 1,
-                                                     'mixed', 50, chars)
+            session['_csrf_token'] = str(secrets.token_urlsafe(50)).replace(
+                '-', 't').replace(
+                '_', 'w')
 
         return session['_csrf_token']
 
