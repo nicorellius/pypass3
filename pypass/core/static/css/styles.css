@@ -118,14 +118,14 @@ body {
     margin-top: 10px;
 }
 
-#p1 {
-    max-width: 380px;
+#secret-field {
+    max-width: 395px;
 }
 
-#p2 {
+#copy-secret {
     float: right;
-    margin-top: -44px;
-    height: 34px;
+    margin-top: -43px;
+    height: 33px;
 }
 
 textarea#playground-area {
@@ -210,16 +210,17 @@ a i#settings-gear:hover {
     color: gray;
 }
 
-#logo img {
-    height: 35px;
-    margin: 0 0 8px 0;
+#app-title {
+    color: darkred;
+    font-family: Fjalla One, sans-serif;
 }
 
-a#logo {
-    line-height: 30px !important;
+#logo {
+    padding: 0 0 5px 0;
+    color: darkslategray;
 }
 
-a#logo:hover {
+a #logo:hover {
     text-decoration: none;
     opacity: 0.8;
 }
