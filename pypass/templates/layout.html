@@ -9,6 +9,7 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='font_awesome/css/font-awesome.css') }}">
 <link href="https://fonts.googleapis.com/css?family=Archivo Narrow|Fjalla One|Anton|Oswald|Amiri|BioRhyme|Crimson+Text|Domine|Droid+Serif|Open+Sans+Condensed:300|Roboto|Sanchez|Tinos|Volkhov" rel="stylesheet">
 
 <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
@@ -19,11 +20,10 @@
 <div class="page">
 
     <h1 id="main-title">
-        <a id="logo" href="/"><img src="{{ url_for('static', filename='images/lock_icon.png') }}"></a>
-        <span class="red-title">PyPass</span>
-        <span class="xs-sub">&nbsp; Password Manager & Generator</span>
-        {# <a href="{{ url_for('settings') }}"> #}
-        <a href="#">
+        <a href="/"><i id="logo" class="fa fa-lock fa-lg"></i></a>
+        <span id="app-title">PyPass3</span>
+        <span class="xs-sub">&nbsp; Password Generator & Manager</span>
+        <a href="#settings">
             <i id="settings-gear" class="glyphicon glyphicon-cog" aria-hidden="true"></i>
         </a>
     </h1>
@@ -130,9 +130,9 @@
                     {% for msg in secrets %}
                     <span class="sm-font bold">Your secret is:</span>
                     <div class="flashy">
-                        <pre id="p1">{{ msg }}</pre>
-                        <button id="p2" class="btn btn-sm btn-custom-success">
-                            Copy
+                        <pre id="secret-field">{{ msg }}</pre>
+                        <button id="copy-secret" class="btn btn-sm btn-custom-success">
+                            <strong><i class="fa fa-files-o"></i></strong>
                         </button>
                     </div>
                     {% endfor %}
