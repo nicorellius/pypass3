@@ -5,8 +5,8 @@ import hashlib
 import binascii
 import datetime
 import uuid
-import time
 
+from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -71,6 +71,7 @@ def gen_uid(length=10, rid=False):
     return ''.join(random.sample(list(tmp_uid), length))
 
 
+# TODO: this function is not ready for show time. Experimental only!
 def hash_password(password, salt_length=16,
                   iterations=10000, encoding='utf-8'):
     """
@@ -99,6 +100,7 @@ def hash_password(password, salt_length=16,
     # return hashed_password
 
 
+# TODO: this function is not ready for show time. Experimental only!
 def crypto_hash(secret, salt='tTn0ICSQ8d!pVGULB+L='):
 
     """
@@ -149,3 +151,33 @@ def get_roc(api_key=config.API_KEY):
 
     except (ValueError, AttributeError) as e:
         print(e)
+
+
+def encrypt(secret):
+    """
+    Encrypt secret and return it
+
+    :param secret: thing to encrypt
+    :return: encrypted thing
+    """
+
+    key = Fernet.generate_key()
+    f = Fernet(key)
+    token = f.encrypt(bytes(secret, 'utf-8'))
+
+    return key, token
+
+
+def decrypt(key, token):
+    """
+    Encrypt secret and return it
+
+    :param token: thing to decrypt
+    :param key: key to unlock
+    :return: decrypted thing
+    """
+
+    f = Fernet(key)
+    secret = f.decrypt(token)
+
+    return secret

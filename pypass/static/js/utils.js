@@ -70,11 +70,11 @@ $(document).ready(function() {
 
 $(document).ready(function() {
     // add handler
-    $('#p2').click(function() {
+    $('#copy-secret').click(function() {
 
         var $temp = $('<input>');
         $('body').append($temp);
-        $temp.val($('#p1').text()).select();
+        $temp.val($('#secret-field').text()).select();
         document.execCommand('copy');
         $temp.remove();
     });
@@ -105,5 +105,30 @@ $(document).ready(function() {
 $(document).ready(function() {
     $('#generate-btn, #run-again').click(function() {
         $('#spinner').show();
+    });
+});
+
+// show/hide functionality on secret field
+$(document).ready(function() {
+    // add handler
+    $('.toggler-icon').click(function() {
+        $(this).toggleClass('fa-eye fa-eye-slash');
+    });
+});
+
+// Keep tab selected on page refresh
+// https://stackoverflow.com/questions/18999501/bootstrap-3-keep-selected-tab-on-page-refresh#19015027
+$(document).ready(function() {
+    if (location.hash) {
+        $("a[href='" + location.hash + "']").tab('show');
+    }
+    $(document.body).on('click', 'a[data-toggle]', function(event) {
+        location.hash = this.getAttribute("href");
+    });
+
+    $(window).on('popstate', function() {
+        var anchor = location.hash ||
+            $('a[data-toggle="tab"]').first().attr('href');
+        $("a[href='" + anchor + "']").tab('show');
     });
 });

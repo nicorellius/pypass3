@@ -19,9 +19,12 @@
                 <input id="" type="text" class="form-control" name="">
             </div>
 
-            <div class="form-group">
+            <div id="pwd-wrapper" class="form-group">
                 <label for="">Secret</label>
-                <input id="" type="password" class="form-control" name="">
+                <i class="fa fa-eye fa-lg toggler-icon"
+                    onclick="if(password.type=='text') { password.type='password'; } else password.type='text';">
+                </i>
+                <input id="password" type="password" class="form-control" name="password">
             </div>
 
             <div class="form-group">

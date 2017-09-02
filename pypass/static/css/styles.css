@@ -2,11 +2,14 @@ a {
     cursor: pointer;
     outline: 0;
 }
+
 a:hover, a:active, a:after {
     outline: 0;
 }
+
 a, h1, h2 { color: #377ba8; }
 h2 { font-size: 1.2em; }
+label {}
 
 .entries li { margin: 0.8em 1.2em; }
 .entries li h2 { margin-left: -1em; }
@@ -76,6 +79,22 @@ body {
     /*font-family: 'Georgia', serif;*/
     /*margin: 0;*/
 /*}*/
+
+.toggler-icon {
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    width: 15px;
+    position: absolute;
+    right: 10px;
+    top: 30px;
+}
+
+#pwd-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+}
 
 .page {
     margin: 1em auto;

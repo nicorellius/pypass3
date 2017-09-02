@@ -10,8 +10,9 @@ from . import config
 from .oauth import OAuthSignIn
 
 from .generate import generate_secret
-from .application import app, mongo
-from .models import User
+from .application import app
+from .models.user import User
+from .models.secret import Secret
 
 
 # Start views for main application
@@ -178,7 +179,7 @@ def oauth_callback(provider):
 
             return redirect(url_for('home'))
 
-        dbu = mongo.db.users.find_one({'social_id': social_id})
+        dbu = User.objects.find_one({'social_id': social_id})
         print('just queried mongo...')
 
         try:
@@ -187,6 +188,12 @@ def oauth_callback(provider):
                         email=dbu['email'])
             print('just created user...')
             print('user: ' + user.username)
+            s = Secret(account_name='test', login_string='nicorellius',
+                       password='fuckyou',
+                       url='test', notes='testing')
+            print(s.password)
+            s.save()
+            print(s)
 
         except TypeError as te:
             user = None
@@ -204,11 +211,13 @@ def oauth_callback(provider):
                 # TODO  find way to check for duplicate entry, eg, like
                 # TODO  Integrity error for SQLite. Enforce uniqueness for this
                 # TODO  document, eg, user...
+                
                 mongo.db.users.insert({
                     'username': user.username,
                     'social_id': user.social_id,
                     'email': user.email
                 })
+                mongo.db.secrets.insert({'username': s})
 
                 config.logger.info('[{0}] New user created: {1}'.format(
                     utils.get_timestamp(), user))
