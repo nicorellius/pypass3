@@ -10,21 +10,17 @@ def generate_secret(number_rolls: int = 5, number_dice: int =5,
 
 import pytest
 
-from generate import generate_secret
-from generate import (
+from apps.generate import (
     _validate_count, _roll_dice, _concatenate_remainder,
     _prepare_chunks, _chunks
 )
-
-import config
-
-from utils import get_roc
+from apps.generate import generate_secret
+from core import config
+from core.utils import get_roc
 
 # All tests use these...
-roc = get_roc(config.API_KEY)
+roc = get_roc(config.RDO_API_KEY)
 chars = config.CHARACTERS
-
-# TODO: Modify tests to work without click
 
 
 # ========== simple add function for sanity check ==========

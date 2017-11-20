@@ -12,12 +12,16 @@ https://www.mozilla.org/en-US/MPL/2.0/
 Copyright (c) 2017 Nick Vincent-Maloney <nicorellius@gmail.com>
 
 """
+import logging
 
 from urllib import request
 from urllib.error import HTTPError
 
-from . import utils
-from . import config
+from core import utils
+from core import config
+
+
+logger = logging.getLogger('pypass')
 
 
 def generate_secret(number_rolls: int = 5, number_dice: int = 5,
@@ -53,12 +57,12 @@ def generate_secret(number_rolls: int = 5, number_dice: int = 5,
 
         if number_dice == 4:
             word_list = config.WORDLIST_SHORT
-            config.logger.info(
-                '[{0}] Using short word list...'.format(utils.get_timestamp()))
+            logger.info(
+                'Using short word list...')
         else:
             word_list = config.WORDLIST_LONG
-            config.logger.info(
-                '[{0}] Using long word list...'.format(utils.get_timestamp()))
+            logger.info(
+                'Using long word list...')
 
         chunked_list = _prepare_chunks(number_rolls, number_dice)
         result, secret_length = _match_numbers_words(word_list, chunked_list)
@@ -66,16 +70,10 @@ def generate_secret(number_rolls: int = 5, number_dice: int = 5,
     elif output_type == 'numbers':
         chars = '1234567890'
 
-        config.logger.info(
-            '[{0}] Output type `numbers` selected...'.format(
-                utils.get_timestamp())
-        )
+        logger.info('Output type `numbers` selected...')
 
     else:
-        config.logger.info(
-            '[{0}] Output type `mixed` selected...'.format(
-                utils.get_timestamp())
-        )
+        logger.info('Output type `mixed` selected...')
 
     if output_type != 'words':
 
@@ -88,9 +86,7 @@ def generate_secret(number_rolls: int = 5, number_dice: int = 5,
     else:
         result = result
 
-    config.logger.info('[{0}] Your password is: {1}'.format(
-        utils.get_timestamp(), result)
-    )
+        logger.info('Your password is: {0}'.format(result))
 
     return result
 
@@ -118,12 +114,12 @@ def _match_numbers_words(wd_list, ch_list):
 
         for line in request.urlopen(wd_list):
             # Take word list and break apart into list
-            l = line.decode()
-            d = {int(l.split('\t')[0]): l.split('\t')[1].strip('\n')}
+            ln = line.decode()
+            d = {int(ln.split('\t')[0]): ln.split('\t')[1].strip('\n')}
             super_list.append(d)
 
     except HTTPError as e:
-        config.logger.error('[{0}] {1}'.format(utils.get_timestamp(), e))
+        logger.error('[{0}] {1}'.format(utils.get_timestamp(), e))
 
     # Convert list into str and int components
     for k in set(k for d in super_list for k in d):
@@ -146,9 +142,7 @@ def _prepare_chunks(number_rolls, number_dice):
     chunks = list(_chunks(number_list, number_dice))
 
     if config.appconf['DEBUG'] is True:
-        config.logger.info('[{0}] Chunked list:\n  {1}'.format(
-            utils.get_timestamp(), chunks)
-        )
+        logger.info('Chunked list:\n  {0}'.format(chunks))
 
     return chunks
 
@@ -174,10 +168,7 @@ def _concatenate_remainder(roc, chars, pw_len,
     remainder = pw_len % 20  # old version was factor = int(pw_len) % 20
 
     if config.appconf['DEBUG']:
-        config.logger.info(
-            '[{0}] factor: {1}, remainder: {2}'.format(
-                utils.get_timestamp(), factor, remainder)
-        )
+        logger.info('Factor: {1}, remainder: {2}'.format(factor, remainder))
 
     # Generate string in length equal to remainder
     if pw_len > 20:

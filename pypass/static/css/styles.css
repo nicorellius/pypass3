@@ -18,6 +18,8 @@ label {}
 .sm-font { font-size: 9pt; }
 .bold { font-weight: bold; }
 .unbold { font-weight: normal; }
+.show { display: block; }
+.hide { display: none; }
 
 .top-mar-1em { margin-top: 1em; }
 .top-mar-2em { margin-top: 2em; }
@@ -156,7 +158,7 @@ body {
     height: 34px;
 }
 
-textarea#playground-area {
+textarea.custom-textarea {
     height: 100px;
     width: 438px;
 }
@@ -166,14 +168,6 @@ textarea#playground-area {
     padding: 0.5em;
     border: 1px solid #c99b9b;
     border-radius: 3px;
-}
-
-.show-div {
-    display: block;
-}
-
-.hide-div {
-    display: none;
 }
 
 .btn-container {

@@ -2,39 +2,50 @@
 
 <h2>Manage Secrets</h2>
 
-<p>Add an entry to your secret collection. All entries are stored hashed with</p>
+<p>
+    Add an entry to your secret collection. All passwords are hashed
+    with <a href="https://password-hashing.net/submissions/specs/Argon-v3.pdf"
+            target="_blank">Argon2</a>
+    and entire entries are stored in an encrypted document store.
+</p>
 
     {% if session.logged_in %}
 
-    <form action="{{ url_for('settings') }}" method="post" class="add-entry">
+    <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
 
         <div>
             <div class="form-group">
-                <label for="s">Account name</label>
-                <input id="edit-chars" type="text" class="form-control" name="">
+                <label for="account-name">Name of Account</label>
+                <input id="account-name" name="account" type="text" class="form-control">
             </div>
 
             <div class="form-group">
-                <label for="">Username</label>
-                <input id="" type="text" class="form-control" name="">
+                <label for="username">Username/Sign in</label>
+                <input id="username" name="username" type="text" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="account-email">Account E-mail</label>
+                <input id="account-email" name="email" type="email" class="form-control">
             </div>
 
             <div id="pwd-wrapper" class="form-group">
-                <label for="">Secret</label>
+                <label for="password">Password/Passphrase</label>
                 <i class="fa fa-eye fa-lg toggler-icon"
                     onclick="if(password.type=='text') { password.type='password'; } else password.type='text';">
                 </i>
-                <input id="password" type="password" class="form-control" name="password">
+                <input id="password" name="password" type="password" class="form-control">
             </div>
 
             <div class="form-group">
                 <label for="">Sign in URL</label>
-                <input id="" type="text" class="form-control" name="">
+                <input id="" name="url" type="text" class="form-control">
             </div>
 
             <div class="form-group">
-                <label for="">Notes</label>
-                <textarea id="playground-area" name="secret"></textarea>
+                <label for="account-name-notes">Notes
+                    <textarea class="custom-textarea" name="notes"></textarea>
+                </label>
             </div>
 
             <button style="width: 150px;" class="btn btn-custom-success" type="submit">

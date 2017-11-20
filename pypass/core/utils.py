@@ -1,21 +1,25 @@
-import os
-import re
-import random
-import hashlib
 import binascii
 import datetime
+import hashlib
+import os
+import random
+import re
 import uuid
+import logging
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
 from rdoclient import RandomOrgClient
+
+# this likely results in circular
+# from ..apps.generate import generate_secret
 
 from . import config
 
-from .generate import generate_secret
+
+logger = logging.getLogger('pypass')
 
 
 # get time in format I like
@@ -33,14 +37,13 @@ def get_timestamp():
 
 def log_output_params(output_type, dice, rolls, length, num):
 
-    return config.logger.info(
-        '[{0}] Parameters:\n'
-        '        output type: {1} {2}\n'
-        '     number of dice: {3}     {4}\n'
-        '    number of rolls: {5}     {6}\n'
-        '      secret length: {7}    {8}\n'
-        '  number of secrets: {9}     {10}'.format(
-            get_timestamp(),
+    return logger.info(
+        'Parameters:\n'
+        '        output type: {0} {1}\n'
+        '     number of dice: {2}      {3}\n'
+        '    number of rolls: {4}      {5}\n'
+        '      secret length: {6}     {7}\n'
+        '  number of secrets: {8}      {9}'.format(
             output_type, type(output_type),
             dice, type(dice),
             rolls, type(rolls),
@@ -72,6 +75,7 @@ def gen_uid(length=10, rid=False):
 
 
 # TODO: this function is not ready for show time. Experimental only!
+# TODO: Use Argon2 instead for hashing passwords
 def hash_password(password, salt_length=16,
                   iterations=10000, encoding='utf-8'):
     """
@@ -101,6 +105,7 @@ def hash_password(password, salt_length=16,
 
 
 # TODO: this function is not ready for show time. Experimental only!
+# TODO: Use Argon2 instead for hashing passwords
 def crypto_hash(secret, salt='tTn0ICSQ8d!pVGULB+L='):
 
     """
@@ -114,8 +119,8 @@ def crypto_hash(secret, salt='tTn0ICSQ8d!pVGULB+L='):
     backend = default_backend()
 
     if not salt or len(salt) < 10:
-        # os.urandom(16)  # this calls OS random generator
-        salt = generate_secret(output_type='mixed', secret_length=20)
+        os.urandom(16)  # this calls OS random generator
+        # salt = generate_secret(output_type='mixed', secret_length=20)
 
     salt = bytes(salt, 'utf-8')
 
@@ -137,7 +142,7 @@ def crypto_hash(secret, salt='tTn0ICSQ8d!pVGULB+L='):
     return verify
 
 
-def get_roc(api_key=config.API_KEY):
+def get_roc(api_key=config.RDO_API_KEY):
     """
     Get instance of RandomOrgClient for testing.
 
@@ -157,27 +162,38 @@ def encrypt(secret):
     """
     Encrypt secret and return it
 
-    :param secret: thing to encrypt
-    :return: encrypted thing
+    :param secret
+    :return: key and encrypted secret
     """
 
     key = Fernet.generate_key()
     f = Fernet(key)
-    token = f.encrypt(bytes(secret, 'utf-8'))
+    ciphertext = f.encrypt(bytes(secret, 'utf-8'))
 
-    return key, token
+    return ciphertext
 
 
 def decrypt(key, token):
     """
-    Encrypt secret and return it
+    Decrypt token (ciphertext) and return it
 
-    :param token: thing to decrypt
-    :param key: key to unlock
-    :return: decrypted thing
+    :param token: ciphertext
+    :param key
+    :return: decrypted secret
     """
 
     f = Fernet(key)
     secret = f.decrypt(token)
 
     return secret
+
+
+def sha3_hash(message):
+    """
+    Hash message with SHA3-512
+
+    :param message:
+    :return: SHA3-512 hash
+    """
+
+    return hashlib.sha3_512(message)

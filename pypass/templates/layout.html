@@ -17,6 +17,8 @@
 <title>PyPass - Password Manager & Generator</title>
 </head>
 
+{% include 'noscript.html' %}
+
 <div class="page">
 
     <h1 id="main-title">
@@ -103,19 +105,19 @@
             </a>
         </p>
 
-        <p id="rm1" class="hide-div">
+        <p id="rm1" class="hide">
             Number of rolls determines how many words in your passphrase.
             Number of dice determine which EFF word list to use: long
             or short. Defaults to 5 dice and 5 rolls and long word list
             for words type.
         <p>
-        <p id="rm2" class="hide-div">
+        <p id="rm2" class="hide">
             Mixed and numbers type don't use dice, but instead use length.
             Defaults to 20. Longer passwords are better. Mixed type uses a
             character list containing alphanumeric with capitals, and these
             additional special characters: ( ! @ # $ % ^ & * _ + = - ? ~ )
         </p>
-        <p id="rm3" class="hide-div">
+        <p id="rm3" class="hide">
             Finally, if you want UUIDs or Faux IDs, you can choose this option.
             Defaults to UUID (32 alphanumeric characters seperated by hypens with
             the following pattern: 8-4-4-4-12).
@@ -159,8 +161,10 @@
 
     {% block login %}{% endblock login %}
 
-    <div id="spinner" class="spinner" style="display: none;">
-        <img id="img-spinner" src="{{ url_for('static', filename='images/spinner.gif') }}" alt="Generating...">
+    <div id="spinner" class="spinner">
+        <img id="img-spinner" src="{{
+            url_for('static', filename='images/spinner.gif')
+        }}" alt="Generating...">
     </div>
 
 </div>

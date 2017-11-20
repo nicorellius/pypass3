@@ -1,5 +1,7 @@
 # PyPass3
-Python Flask web application offering dice roll optional, mostly-random word, number, and mixed character password and passphrase generator.
+PyPass3 is a Python Flask web application offering dice roll optional, mostly-random word, number, and mixed character password and passphrase generator.
+
+It also provides secure storage for your online secrets. Using [Argon2](https://github.com/P-H-C/phc-winner-argon2) for master password hashing and and AES encryption, Pypass3 stores all data encrypted in the database, in transit, and at rest.
 
 @nicorellius | [nicorellius@gmail.com]()
  

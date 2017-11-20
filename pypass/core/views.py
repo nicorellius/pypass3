@@ -1,18 +1,21 @@
+import logging
+
 from flask import (request, session, redirect,
                    url_for, render_template, flash,
                    abort)
-
 from flask_login import login_user, logout_user, current_user
 
-from . import utils
+from apps.generate import generate_secret
+from crypto.encryptor import encrypt_string
 from . import config
-
+from . import utils
+from .application import app
+from .models.secret import Secret
+from .models.user import User
 from .oauth import OAuthSignIn
 
-from .generate import generate_secret
-from .application import app
-from .models.user import User
-from .models.secret import Secret
+
+logger = logging.getLogger('pypass')
 
 
 # Start views for main application
@@ -34,6 +37,37 @@ def settings():
 def manage():
 
     return render_template('manage.html')
+
+
+# Add secret to existing user profile
+@app.route('/entry/add', methods=['POST'])
+def add_entry():
+
+    error = None
+
+    if not session.get('logged_in'):
+        abort(401)
+
+    if request.method == 'POST':
+
+        account = request.form.get('account', 'nick')
+        username = request.form.get('username', 'nick')
+        email = request.form.get('email', 'nicorellius@gmail.com')
+        password = request.form.get('password', '123456')
+        url = request.form.get('account_url', 'http://gmail.com')
+        notes = request.form.get('notes', 'notes')
+
+        print('this working?')
+
+        print(account, username, email, password, url, notes)
+
+        return redirect(url_for('home'))
+
+    # data = {
+    #     'error': error,
+    # }
+
+    # return render_template('manage.html', **data)
 
 
 # Start views for main application
@@ -130,6 +164,28 @@ def generate():
                                      output_type=str(output_type),
                                      secret_length=length)
 
+            # user = User(username='nicorellius', social_id='nicorellius')
+            # user = User.objects(username='nick').upsert_one(
+            #     set_on_insert__created=User().created,
+            #     set__social_id='nick',
+            #     upsert=True)
+
+            user = User.objects(username='nick',
+                                social_id='nick').modify(upsert=True, new=True,
+                                                         set__username='nick',
+                                                         set__social_id='nick')
+            s = Secret(account_name='testing', login_string='nicorellius',
+                       password=encrypt_string(
+                           key_arn='arn:aws:kms:us-east-1:219595677748:key/22a160e7-839a-4ac1-a51f-393d685ee35c',
+                           plaintext=secret),
+                       url='http://example.com', notes='testing')
+
+            logger.info('Encrypted secret: {0}'.format(s.password))
+            user.passwords.append(s)
+            # user.passwords.save()
+            user.save()
+            # print(s)
+
             flash(secret, 'secrets')
 
             utils.log_output_params(output_type, dice, rolls, length, num)
@@ -176,61 +232,35 @@ def oauth_callback(provider):
 
         if social_id is None:
             flash('Authentication failed.')
-
             return redirect(url_for('home'))
 
-        dbu = User.objects.find_one({'social_id': social_id})
-        print('just queried mongo...')
-
-        try:
-            user = User(username=dbu['username'],
-                        social_id=dbu['social_id'],
-                        email=dbu['email'])
-            print('just created user...')
-            print('user: ' + user.username)
-            s = Secret(account_name='test', login_string='nicorellius',
-                       password='fuckyou',
-                       url='test', notes='testing')
-            print(s.password)
-            s.save()
-            print(s)
-
-        except TypeError as te:
-            user = None
-            print('TypeError: {0}'.format(te))
+        user = User.objects.get(social_id=social_id)
+        print('fetched user from database...')
+        print('user: ' + user.username)
 
         config.logger.info('[{0}] Me in oauth_callback: {1}'.format(
-            utils.get_timestamp(), dbu))
+            utils.get_timestamp(), user))
 
-        if user is None and dbu is None:
-            print('no user...   ')
-
-            try:
-                print('trying to create new user...')
-                user = User(username=username, social_id=social_id, email=email)
-                # TODO  find way to check for duplicate entry, eg, like
-                # TODO  Integrity error for SQLite. Enforce uniqueness for this
-                # TODO  document, eg, user...
-                
-                mongo.db.users.insert({
-                    'username': user.username,
-                    'social_id': user.social_id,
-                    'email': user.email
-                })
-                mongo.db.secrets.insert({'username': s})
-
-                config.logger.info('[{0}] New user created: {1}'.format(
-                    utils.get_timestamp(), user))
-
-            # TODO: better exception here for duplicate? Or remove?
-            except ValueError:
-                login_user(user, True)
-                session['logged_in'] = True
-                flash("Only one '{0}' can access this system.\n"
-                      "Logged in as 'guest' instead.".format(username),
-                      'notifications')
-
-                return redirect(url_for('home'))
+        # if user is None:
+        #     print('no user...   ')
+        #
+        #     try:
+        #         print('trying to create new user...')
+        #         user =
+        #             User(username=username, social_id=social_id, email=email)
+        #         user.save()
+        #
+        #         config.logger.info('[{0}] New user created: {1}'.format(
+        #             utils.get_timestamp(), user))
+        #
+        #     except ValueError:
+        #         login_user(user, True)
+        #         session['logged_in'] = True
+        #         flash("Only one '{0}' can access this system.\n"
+        #               "Logged in as 'guest' instead.".format(username),
+        #               'notifications')
+        #
+        #         return redirect(url_for('home'))
 
         login_user(user, True)
         session['logged_in'] = True

@@ -6,38 +6,18 @@ import os
 import string
 import logging
 
-appconf = dict(
-    DEBUG=True,
-    SECRET_KEY='xN~@en@B%l0Kli6TBVUoxOP(tIJ_JnC@=9(a8N8cg27J)*nQ!c',
-    # Starting point for credentials
-    USERNAME='guest',
-    PASSWORD='password',
-    DEBUG_TB_INTERCEPT_REDIRECTS=False,
-    # Oauth configuration
-    OAUTH_CREDENTIALS={
-        'github': {
-            'id': 'd3be9a39c8db65911ce0',
-            'secret': 'cba32867fc777bd1291425e3aeedb222f51ef7c0'
-        },
-        'facebook': {
-            'id': '137292646828195',
-            'secret': 'e9ba084118895fc5dc82ed69eb6a3330'
-        },
-        'twitter': {
-            'id': 'g3wINYT3Y3jI5iuxCFEJ5meG2',
-            'secret': 'MH7c6kHwi7ICvyE0PyJl0Ezf7xJG7z15StmznMBG3TTcdE943p'
-        },
-        'google': {
-            'id': '244230397026-m1t3fkrqmsgp1179igldfc8n3tgt0fhs.apps.googleusercontent.com',
-            'secret': 'a4f9iIukFaLFj2DZMnkuqnV6'
-        }
-    },
-    # Mongo configuration
-    MONGO_DBNAME='pypass',
-    MONGO_PORT='12345',
-    MONGO_USERNAME='pypass',
-    MONGO_PASSWORD='gn5n_1xSb5ITqoKmG_oe',
-)
+# Secrets set here
+# Flask application secret key
+with open('/etc/prv/pypass/flask_secret_key.txt') as secret_key:
+    FLASK_APP_SECRET_KEY = secret_key.read().strip()
+
+# MongoDB database password
+with open('/etc/prv/pypass/mongodb_password.txt') as mongodb_password:
+    MONGO_DB_PASSWORD = mongodb_password.read().strip()
+
+# RANDOM.ORG API Key
+with open('/etc/prv/pypass/rdo_api_key.txt') as api_key:
+    RDO_API_KEY = api_key.read().strip()
 
 # CORE_ROOT = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -58,7 +38,7 @@ WORDLIST_LONG = 'http://bit.ly/2mtdxEk'
 WORDLIST_SHORT = 'http://bit.ly/2ogvDGr'
 
 # Note that this API key is not secure, and you should request your own!!!
-API_KEY = '59052bc4-840b-4923-96b7-90332167bc8c'
+API_KEY = RDO_API_KEY
 
 _SPECIAL = '!@#$%^&*()_+=-?~'
 CHARACTERS = '{ascii}{digits}{special}'.format(
@@ -66,12 +46,48 @@ CHARACTERS = '{ascii}{digits}{special}'.format(
 
 ROC_API_MAX_LENGTH = 20
 
-# Set up logging configuration and get logger
-# TODO: set up proper logging app with handler, formatter, etc...
-logging.basicConfig(
-    # filename='output.log',
-    format='%(levelname)s %(message)s',
-    level=logging.DEBUG
+appconf = dict(
+    DEBUG=True,
+    SECRET_KEY=FLASK_APP_SECRET_KEY,
+    # Starting point for credentials
+    USERNAME='guest',
+    PASSWORD='password',
+    # Debug Toolbar and MongoEngine configuration
+    DEBUG_TB_INTERCEPT_REDIRECTS=False,
+    DEBUG_TB_PANELS=[
+        'flask_debugtoolbar.panels.versions.VersionDebugPanel',
+        'flask_debugtoolbar.panels.timer.TimerDebugPanel',
+        'flask_debugtoolbar.panels.headers.HeaderDebugPanel',
+        'flask_debugtoolbar.panels.request_vars.RequestVarsDebugPanel',
+        'flask_debugtoolbar.panels.template.TemplateDebugPanel',
+        'flask_debugtoolbar.panels.logger.LoggingPanel',
+        'flask_debugtoolbar.panels.profiler.ProfilerDebugPanel',
+        'flask_mongoengine.panels.MongoDebugPanel',
+    ],
+    # Oauth configuration
+    OAUTH_CREDENTIALS={
+        'github': {
+            'id': 'd3be9a39c8db65911ce0',
+            'secret': 'cba32867fc777bd1291425e3aeedb222f51ef7c0'
+        },
+        'facebook': {
+            'id': '137292646828195',
+            'secret': 'e9ba084118895fc5dc82ed69eb6a3330'
+        },
+        'twitter': {
+            'id': 'g3wINYT3Y3jI5iuxCFEJ5meG2',
+            'secret': 'MH7c6kHwi7ICvyE0PyJl0Ezf7xJG7z15StmznMBG3TTcdE943p'
+        },
+        'google': {
+            'id': '244230397026-m1t3fkrqmsgp1179igldfc8n3tgt0fhs.apps.googleusercontent.com',
+            'secret': 'a4f9iIukFaLFj2DZMnkuqnV6'
+        }
+    },
+    # Mongo configuration
+    MONGODB_DB='pypass',
+    MONGODB_ALIAS='core',
+    MONGODB_HOST='localhost',
+    MONGODB_PORT=27972,
+    MONGODB_USERNAME='pypass',
+    MONGODB_PASSWORD=MONGO_DB_PASSWORD,
 )
-
-logger = logging.getLogger(__name__)
