@@ -1,4 +1,11 @@
 # PyPass3
+
+This repo has officially been moved to the following URL
+
+https://bitbucket.org/nicorellius/pypass3
+
+All licenses herein DO NOT APPLY to this code. This repo has been archived so please don't fork it. Head over to Bitbucket and fork that one.
+
 Python Flask web application offering dice roll optional, mostly-random word, number, and mixed character password and passphrase generator.
 
 @nicorellius | [nicorellius@gmail.com]()
